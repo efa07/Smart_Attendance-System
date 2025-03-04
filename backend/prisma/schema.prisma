@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int    @id @default(autoincrement())
+  fullName  String
+  email     String @unique
+  password  String
+  role      String
+  department String?
+  createdAt DateTime @default(now())
+
+  attendance Attendance[]
+  faceEncoding FaceEncoding? 
+  shifts Shift? 
+  leaves Leave[]
+  notifications Notification[]
+}
+
+
+model Attendance {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  checkIn    DateTime?
+  checkOut   DateTime?
+  status     String
+  recognizedFace Boolean @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model FaceEncoding {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userId], references: [id]) // Corrected
+  userId    Int @unique
+  encoding  Bytes
+  createdAt DateTime @default(now())
+}
+
+
+model Shift {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userId], references: [id]) // Corrected
+  userId    Int @unique
+  shiftType String
+  shiftStart DateTime
+  shiftEnd   DateTime
+}
+model Leave {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int
+  leaveType String
+  startDate DateTime
+  endDate   DateTime
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int
+  message   String
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model School {
+  id  Int   @id @default(autoincrement())
+  name  String
+  age Int
+}
