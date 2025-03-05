@@ -124,8 +124,8 @@ export default function AttendanceReports() {
               {records.length > 0 ? (
                 records.map((record, index) => (
                   <tr key={index}>
-                    <td className="px-4 py-2 border-b text-gray-700">{record.date.split("T")[0]}</td>
-                    <td className="px-4 py-2 border-b text-gray-700">{record.checkIn}</td>
+                    <td className="px-4 py-2 border-b text-gray-700">{record.checkIn.split("T")[0]}</td>
+                    <td className="px-4 py-2 border-b text-gray-700">{record.checkIn.split("T")[1]}</td>
                     <td className="px-4 py-2 border-b text-gray-700">
                       {record.checkOut ? record.checkOut : 'N/A'}
                     </td>
