@@ -19,10 +19,11 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const userId = 13; // Replace with dynamic userId if needed
 
-export default function AttendanceTrend() {
+
+const AttendanceTrend = () => {
   const [chartData, setChartData] = useState([]);
+  const token = localStorage.getItem('token');
 
   const chartConfig = {
     checkInTime: {
@@ -34,20 +35,27 @@ export default function AttendanceTrend() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/attendance/history?userId=${userId}`);
+        const response = await fetch(`http://localhost:3001/api/attendance/history`,{
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch attendance data");
         }
         const data = await response.json();
-        console.log(data)
         setChartData(data); // Update state with fetched data
       } catch (error) {
-        console.error("Error fetching data:", error.message);
+        if (error instanceof Error) {
+          console.error("Error fetching data:", error.message);
+        } else {
+          console.error("Error fetching data:", error);
+        }
       }
     };
 
     fetchData();
-  }, [userId]);
+  }, []);
 
   return (
     <Card>
@@ -93,3 +101,5 @@ export default function AttendanceTrend() {
     </Card>
   );
 }
+
+export default AttendanceTrend;

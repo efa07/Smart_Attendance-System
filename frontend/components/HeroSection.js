@@ -1,6 +1,4 @@
-import Image from "next/image";
 import {ScanFace, LocateFixed,UserRoundPlus} from "lucide-react"
-import { motion } from "framer-motion";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import ThreeDCardDemo from "../components/card";
 import InfiniteHorizontalScroll from "./InfiniteCard"

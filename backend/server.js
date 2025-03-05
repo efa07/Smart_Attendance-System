@@ -1,17 +1,21 @@
+process.env.TZ = 'Africa/Addis_Ababa'; // Set timezone to Ethiopia
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const employeeRoutes = require("./routes/employeeRoutes");
+const leaveRoute = require("./routes/leaveRoute")
 const attendanceRoutes = require("./routes/attendanceRoutes");
-
 const app = express();
 const prisma = new PrismaClient();
+
 app.use(cors());
 app.use(express.json());
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/leave",leaveRoute)
 
 // Secret key for JWT
 const JWT_SECRET = process.env.JWT_SECRET

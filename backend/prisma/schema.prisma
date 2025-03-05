@@ -72,8 +72,4 @@ model Notification {
   createdAt DateTime @default(now())
 }
 
-model School {
-  id  Int   @id @default(autoincrement())
-  name  String
-  age Int
-}
+

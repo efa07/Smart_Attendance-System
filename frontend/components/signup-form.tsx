@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export function SignUpForm({ className, ...props }: React.ComponentProps<"form">) {
@@ -20,6 +21,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
   const [fullName, setName] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const [department, setDepartment] = useState<string>("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,7 +46,8 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         department,
       });
       alert(response.data.message);
-    } catch (error) {
+      router.push("/login")
+    } catch (error: any) {
       console.error("Signup error:", error);
       alert(error.response?.data?.error || "An error occurred during signup");
     }

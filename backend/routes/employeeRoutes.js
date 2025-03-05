@@ -1,12 +1,13 @@
 const express = require("express");
 const prisma = require("../prismaClient");
+const authenticate = require("../middleware/authMiddleware");
+
 
 const router = express.Router();
 
 // Get Employee Profile
-router.get("/profile", async (req, res) => {
-  const { userId } = req.query;
-
+router.get("/profile",authenticate, async (req, res) => {
+  const { userId } = req.user;
   try {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(userId) },
