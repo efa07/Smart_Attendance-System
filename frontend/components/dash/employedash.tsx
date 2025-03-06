@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bell, Calendar, Clock, FileText } from 'lucide-react';
+import { Bell, Calendar, Clock, FileText, ChartColumn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -110,73 +110,82 @@ export default function EmployeeDashboard({ userId }: { userId: string | null })
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-mono">Employee Dashboard</h1>
+    <>
+      <div className="p-6 space-y-6 ">
+        <h1 className="text-2xl font-mono">Employee Dashboard</h1>
 
-      {/* Attendance Overview */}
-      <Card>
-        <Link href="dashboard/chart">
+        {/* Attendance Overview */}
+        <Card className='flex flex-row items-center justify-between'>
           <CardContent className="p-4">
-            <h2 className="text-lg font-semibold">Attendance Overview</h2>
-            <p>View your daily, weekly, and monthly attendance stats.</p>
+            <div className='flex flex-row'>
+              <ChartColumn />
+              <h2 className="text-lg font-semibold ml-2">Attendance Overview</h2>
+            </div>
+            <p className='ml-8'>View your daily, weekly, and monthly attendance stats.</p>
           </CardContent>
-        </Link>
-      </Card>
+          <Link href="dashboard/chart" className='w-xs m-3 text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition duration-200 mt-4'>Chart</Link>
+        </Card>
 
-      {/* Clock In/Out */}
-      <Card>
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Clock size={24} />
-            <h2 className="text-lg font-semibold">Clock-In/Out</h2>
-          </div>
-          <p>Status: {status}</p>
+        {/* Clock In/Out */}
+        <Card>
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Clock size={24} />
+              <h2 className="text-lg font-semibold">Clock-In/Out</h2>
+            </div>
+            <p>Status: {status}</p>
 
-          {status === 'Not Checked In' ? (
-            <Button
-              onClick={handleClockIn}
-              variant="outline"
-              disabled={loading}
-              aria-label="Clock In"
-            >
-              {loading ? 'Checking In...' : 'Clock In'}
-            </Button>
-          ) : (
-            <Button
-              onClick={handleClockOut}
-              variant="destructive"
-              disabled={loading}
-              aria-label="Clock Out"
-            >
-              {loading ? 'Checking Out...' : 'Clock Out'}
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+            {status === 'Not Checked In' ? (
+              <Button
+                onClick={handleClockIn}
+                variant="outline"
+                disabled={loading}
+                aria-label="Clock In"
+              >
+                {loading ? 'Checking In...' : 'Clock In'}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleClockOut}
+                variant="destructive"
+                disabled={loading}
+                aria-label="Clock Out"
+              >
+                {loading ? 'Checking Out...' : 'Clock Out'}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+        {/* Leave Management */}
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center space-x-3">
+            <Calendar size={24} />
+            <h2 className="text-lg font-semibold">Leave Management</h2>
+            <Link href="/dashboard/leave" className='w-xs text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition duration-200 mt-4'>Leave</Link>
+          </CardContent>
+        </Card>
 
-      {/* Leave Management */}
-      <Card>
-        <CardContent className="p-4 flex items-center space-x-3">
-          <Calendar size={24} />
-          <h2 className="text-lg font-semibold">Leave Management</h2>
-        </CardContent>
-      </Card>
+        {/* Notifications */}
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center space-x-3">
+            <Bell size={24} />
+            <h2 className="text-lg font-semibold">Notifications</h2>
+            <Link href="/dashboard/notification" className='w-xs text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition duration-200 mt-4'>Notifications</Link>
+          </CardContent>
+        </Card>
 
-      {/* Notifications */}
-      <Card>
-        <CardContent className="p-4 flex items-center space-x-3">
-          <Bell size={24} />
-          <h2 className="text-lg font-semibold">Notifications</h2>
-        </CardContent>
-      </Card>
+        {/* Reports */}
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center space-x-3">
+            <FileText size={24} />
+            <h2 className="text-lg font-semibold">Attendance Reports</h2>
+            <Link href="/dashboard/report" className='w-xs text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition duration-200 mt-4'>Report</Link>
 
-      {/* Reports */}
-      <Card>
-        <CardContent className="p-4 flex items-center space-x-3">
-          <FileText size={24} />
-          <h2 className="text-lg font-semibold">Attendance Reports</h2>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+
+
+    </>
   );
 }

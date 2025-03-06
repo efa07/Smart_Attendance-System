@@ -34,7 +34,7 @@ export default function Dashboard({ username }: { username: string | null }) {
         {role === "super_admin" && <SuperAdminDashboard />}
         {role === "department_head" && <DepartmentHeadDashboard />}
         {role === "hr_admin" && <HRManagerDashboard />}
-        {role === "employee" && <EmployeeDashboard userId={userId}/>}
+        {role === "employee" && <EmployeeDashboard userId={userId}/> }
       </div>
     </div>
   );
