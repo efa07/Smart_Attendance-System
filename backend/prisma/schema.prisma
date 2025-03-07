@@ -14,8 +14,8 @@ model User {
   password  String
   role      String
   department String?
+  profilePic   String?
   createdAt DateTime @default(now())
-
   attendance Attendance[]
   faceEncoding FaceEncoding? 
   shifts Shift? 

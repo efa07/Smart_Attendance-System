@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../../components/ui/sidebar";
 import {
   IconArrowLeft,
@@ -13,36 +13,39 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Dashboard from "@/components/dash/dashboard";
 
-
 export default function SidebarDemo() {
   const [username, setUsername] = useState<string | null>("");
+  const [profilePic, setProfilePic] = useState<string | null>(null);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
+    const storedProfilePic = localStorage.getItem("profilePic");
     if (storedUsername) {
       setUsername(storedUsername);
     }
+    if (storedProfilePic) {
+      setProfilePic(storedProfilePic);
+    }
   }, []);
-
 
   const links = [
     {
       label: "Dashboard",
-      href: "#",
+      href: "/dashboard",
       icon: (
         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Profile",
-      href: "#",
+      href: "/dashboard/profile",
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Settings",
-      href: "#",
+      href: "dashboard/settings",
       icon: (
         <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
@@ -55,7 +58,9 @@ export default function SidebarDemo() {
       ),
     },
   ];
+
   const [open, setOpen] = useState(false);
+
   return (
     <div
       className={cn(
@@ -75,16 +80,20 @@ export default function SidebarDemo() {
           <div>
             <SidebarLink
               link={{
-                label: "Efa Tariku",
+                label: username || "Profile",
                 href: "profile",
-                icon: (
+                icon: profilePic ? (
                   <img
-                    src="ai.jpg"
+                    src={`http://localhost:3001/uploads/${profilePic}`}
                     className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
+                    width={30}
+                    height={30}
                     alt="Avatar"
                   />
+                ) : (
+                  <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gray-300 flex items-center justify-center">
+                    <span className="text-sm text-gray-600">No Image</span>
+                  </div>
                 ),
               }}
             />
@@ -95,18 +104,14 @@ export default function SidebarDemo() {
     </div>
   );
 }
+
 export const Logo = () => {
   return (
     <Link
       href="/dashboard"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-        <Image
-      src={"/INSA.png"}
-      alt="INSA"
-      width={30}
-      height={30}
-      />
+      <Image src={"/INSA.png"} alt="INSA" width={30} height={30} />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -117,20 +122,14 @@ export const Logo = () => {
     </Link>
   );
 };
+
 export const LogoIcon = () => {
   return (
     <Link
       href="/dashboard"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <Image
-      src={"/INSA.png"}
-      alt="INSA"
-      width={30}
-      height={30}
-      />
+      <Image src={"/INSA.png"} alt="INSA" width={30} height={30} />
     </Link>
   );
 };
-
-
