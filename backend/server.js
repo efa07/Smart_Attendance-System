@@ -11,7 +11,6 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const multer = require('multer'); // For handling file uploads
 const path = require('path');
 
-
 const app = express();
 const prisma = new PrismaClient();
 
@@ -35,7 +34,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+// Use disk storage instead of memory storage
+const upload = multer({ storage: storage });
 
 // Ensure the "uploads" directory exists
 
@@ -43,7 +43,6 @@ const dir = './uploads';
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
-
 
 // Signup route
 app.post('/api/signup', async (req, res) => {
@@ -112,11 +111,10 @@ app.put('/api/update', upload.single('profilePic'), async (req, res) => {
   try {
     // Verify the JWT token
     const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
 
     // Find the user by ID from the token
-    const userId = decoded.userId;
     const user = await prisma.user.findUnique({ where: { id: userId } });
-
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -150,8 +148,6 @@ app.put('/api/update', upload.single('profilePic'), async (req, res) => {
     res.status(500).json({ error: 'Error updating profile' });
   }
 });
-
-
 
 
 const PORT = process.env.PORT || 3001;

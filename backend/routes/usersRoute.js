@@ -27,3 +27,4 @@ app.put("/api/user/update", upload.single("profilePic"), async (req, res) => {
   }
 });
 
+

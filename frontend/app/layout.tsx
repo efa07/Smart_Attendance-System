@@ -1,6 +1,8 @@
 "use client"
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "../components/navbar";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import "./globals.css";
 
@@ -22,15 +24,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" >
-    
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="mb-10">
           <Navbar />
-          </div>
-          {children}
-          </body>
+        </div>
+        {children}
+        <ToastContainer  />
+      </body>
     </html>
   );
 }

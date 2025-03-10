@@ -26,18 +26,19 @@ model User {
 
 model Attendance {
   id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
   checkIn    DateTime?
   checkOut   DateTime?
   status     String
   recognizedFace Boolean @default(false)
+  overtime   Int? @default(0)
   createdAt  DateTime @default(now())
 }
 
 model FaceEncoding {
   id        Int    @id @default(autoincrement())
-  user      User   @relation(fields: [userId], references: [id]) // Corrected
+  user      User   @relation(fields: [userId], references: [id],onDelete: Cascade) 
   userId    Int @unique
   encoding  Bytes
   createdAt DateTime @default(now())
@@ -46,7 +47,7 @@ model FaceEncoding {
 
 model Shift {
   id        Int    @id @default(autoincrement())
-  user      User   @relation(fields: [userId], references: [id]) // Corrected
+  user      User   @relation(fields: [userId], references: [id],onDelete: Cascade) 
   userId    Int @unique
   shiftType String
   shiftStart DateTime
@@ -54,7 +55,7 @@ model Shift {
 }
 model Leave {
   id        Int    @id @default(autoincrement())
-  user      User   @relation(fields: [userId], references: [id])
+  user      User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId    Int
   leaveType String
   startDate DateTime
@@ -65,7 +66,7 @@ model Leave {
 
 model Notification {
   id        Int    @id @default(autoincrement())
-  user      User   @relation(fields: [userId], references: [id])
+  user      User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   userId    Int
   message   String
   status    String

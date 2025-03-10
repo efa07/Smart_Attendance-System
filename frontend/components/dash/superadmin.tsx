@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, BarChart, Settings, FileText, CalendarCheck } from "lucide-react";
-
+import Link from "next/link"
 export default function SuperAdminDashboard() {
   return (
     <div className="p-6 space-y-6">
@@ -14,8 +14,8 @@ export default function SuperAdminDashboard() {
             <Users size={24} />
             <h2 className="text-lg font-semibold">User & Role Management</h2>
           </div>
-          <Button variant="outline">Manage</Button>
-        </CardContent>
+          <Link href="/dashboard/admin/manage"><Button variant="outline">Manage</Button></Link>
+          </CardContent>
       </Card>
       
       {/* Attendance Analytics */}

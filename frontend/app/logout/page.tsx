@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import MoonLoader from "react-spinners/ClipLoader";
 
 const Logout = () => {
     const router = useRouter();
@@ -14,9 +15,13 @@ const Logout = () => {
     }, [router]);
 
     return (
-        <div>
-            <p>Logging out...</p>
+        <div className="flex items-center justify-center h-screen">
+            <MoonLoader
+                color="#000000"
+                size={70}
+            />
         </div>
+
     );
 };
 
