@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 export default function ProfileSettings() {
   const [user, setUser] = useState({
@@ -41,10 +42,10 @@ export default function ProfileSettings() {
           Authorization: `Bearer ${token}`
         },
       });
-      alert("Profile updated successfully");
+      toast.success("Profile updated successfully")
     } catch (error) {
       console.error(error);
-      alert("Error updating profile");
+      toast.error("Error updating profile")
     }
   };
 

@@ -1,3 +1,4 @@
+"use client"
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,6 @@ export default function EmployeeDashboard({ userId }: { userId: string | null })
   const [attendanceData, setAttendanceData] = useState<any[]>([]);
   const router = useRouter();
 
-  // Moved the function definition outside useEffect
   const fetchAttendanceStatus = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -30,11 +30,9 @@ export default function EmployeeDashboard({ userId }: { userId: string | null })
       if (!res.ok) throw new Error('Failed to fetch attendance history');
       const data = await res.json();
 
-      // Get the latest attendance record (most recent check-in)
       const latestRecord = data.length > 0 ? data[data.length - 1] : null;
 
       if (latestRecord) {
-        // Determine status based on backend's `status` field
         if (latestRecord.checkOut) {
           setStatus('Not Checked In');
         } else {
@@ -181,6 +179,15 @@ export default function EmployeeDashboard({ userId }: { userId: string | null })
             <h2 className="text-lg font-semibold">Attendance Reports</h2>
             <Link href="/dashboard/report" className='w-xs text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition duration-200 mt-4'>Report</Link>
 
+          </CardContent>
+        </Card>
+
+        {/* shift managment */}
+        <Card>
+          <CardContent className="p-4 flex flex-col items-center space-x-3">
+            <FileText size={24} />
+            <h2 className="text-lg font-semibold">Manage shift</h2>
+            <Link href="/dashboard/shift" className='w-xs text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition duration-200 mt-4'>Manage</Link>
           </CardContent>
         </Card>
       </div>

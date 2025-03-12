@@ -7,33 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ShiftType {
+  Morning
+  Afternoon
+  Evening
+}
+
 model User {
-  id        Int    @id @default(autoincrement())
-  fullName  String
-  email     String @unique
-  password  String
-  role      String
-  department String?
+  id           Int    @id @default(autoincrement())
+  fullName     String
+  email        String @unique
+  password     String
+  role         String
+  department   String?
   profilePic   String?
-  createdAt DateTime @default(now())
-  attendance Attendance[]
+  createdAt    DateTime @default(now())
+  attendance   Attendance[]
   faceEncoding FaceEncoding? 
-  shifts Shift? 
-  leaves Leave[]
+  shifts       Shift[] 
+  leaves       Leave[]
   notifications Notification[]
 }
 
-
 model Attendance {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  checkIn    DateTime?
-  checkOut   DateTime?
-  status     String
+  id            Int      @id @default(autoincrement())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  checkIn       DateTime?
+  checkOut      DateTime?
+  status        String
   recognizedFace Boolean @default(false)
-  overtime   Int? @default(0)
-  createdAt  DateTime @default(now())
+  overtime      Int? @default(0)
+  createdAt     DateTime @default(now())
 }
 
 model FaceEncoding {
@@ -44,15 +49,15 @@ model FaceEncoding {
   createdAt DateTime @default(now())
 }
 
-
 model Shift {
-  id        Int    @id @default(autoincrement())
-  user      User   @relation(fields: [userId], references: [id],onDelete: Cascade) 
-  userId    Int @unique
-  shiftType String
+  id         Int        @id @default(autoincrement())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  userId     Int  
+  shiftType  ShiftType
   shiftStart DateTime
   shiftEnd   DateTime
 }
+
 model Leave {
   id        Int    @id @default(autoincrement())
   user      User   @relation(fields: [userId], references: [id],onDelete: Cascade)
@@ -72,5 +77,3 @@ model Notification {
   status    String
   createdAt DateTime @default(now())
 }
-
-

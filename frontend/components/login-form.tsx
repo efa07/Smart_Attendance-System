@@ -42,10 +42,7 @@ export function LoginForm({
       // Decode the token to get user details
       const decoded = jwtDecode(token);
       const { username, role, department, userId, profilePic }: any = decoded;
-
-      // Log the decoded token for debugging
-
-      // Store the token and user details in localStorage
+      
       localStorage.setItem('token', token);
       localStorage.setItem('username', username);
       localStorage.setItem('role', role);

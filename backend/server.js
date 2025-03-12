@@ -10,6 +10,7 @@ const leaveRoute = require("./routes/leaveRoute")
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const multer = require('multer'); // For handling file uploads
 const path = require('path');
+const shiftRoute = require("./routes/shiftRoute")
 
 const app = express();
 const prisma = new PrismaClient();
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/leave",leaveRoute)
+app.use("/api/shift",shiftRoute)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -38,20 +40,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Ensure the "uploads" directory exists
-
 const dir = './uploads';
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
 
-// Signup route
 app.post('/api/signup', async (req, res) => {
   const {  email,password,fullName,role,department } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user
     const user = await prisma.user.create({
       data: {
         fullName,
@@ -68,27 +66,22 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// Login route
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   console.log('Email from request:', email);
 
   try {
-    // Find the user by email
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       return res.status(401).json({ error: 'user not found' });
     }
-
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     console.log(user.profilePic)
-    // Generate JWT token
     const token = jwt.sign({ userId: user.id ,username: user.fullName, role: user.role, department:user.department, profilePic:user.profilePic}, JWT_SECRET, { expiresIn: '12h' });
 
     res.status(200).json({ message: 'Login successful', token, user });
@@ -98,45 +91,37 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-// Update route
 app.put('/api/update', upload.single('profilePic'), async (req, res) => {
   const { fullName, email, password, department } = req.body;
-  const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
-  const profilePic = req.file ? req.file.filename : null; // Get the uploaded file name
+  const token = req.headers.authorization?.split(' ')[1]; 
+  const profilePic = req.file ? req.file.filename : null; 
 
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
   }
-
   try {
-    // Verify the JWT token
     const decoded = jwt.verify(token, JWT_SECRET);
     const userId = decoded.userId;
 
-    // Find the user by ID from the token
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Prepare data for update
     const updateData = {
       fullName: fullName || user.fullName,
       email: email || user.email,
       department: department || user.department,
     };
 
-    // If a new password is provided, hash it
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
     }
 
-    // If a profile picture is uploaded, update the profilePic field
     if (profilePic) {
       updateData.profilePic = profilePic;
     }
 
-    // Update the user in the database
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
@@ -148,7 +133,6 @@ app.put('/api/update', upload.single('profilePic'), async (req, res) => {
     res.status(500).json({ error: 'Error updating profile' });
   }
 });
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

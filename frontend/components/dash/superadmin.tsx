@@ -25,21 +25,11 @@ export default function SuperAdminDashboard() {
             <BarChart size={24} />
             <h2 className="text-lg font-semibold">Attendance Analytics</h2>
           </div>
-          <Button variant="outline">View Reports</Button>
+          <Link href="/dashboard/admin/analysis"><Button variant="outline">View Reports</Button></Link>
+
+          
         </CardContent>
       </Card>
-      
-      {/* Shift & Policy Management */}
-      <Card>
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <CalendarCheck size={24} />
-            <h2 className="text-lg font-semibold">Shift & Policy Management</h2>
-          </div>
-          <Button variant="outline">Configure</Button>
-        </CardContent>
-      </Card>
-      
       {/* System Settings */}
       <Card>
         <CardContent className="p-4 flex items-center justify-between">
@@ -50,7 +40,6 @@ export default function SuperAdminDashboard() {
           <Button variant="outline">Settings</Button>
         </CardContent>
       </Card>
-      
       {/* Payroll & Reports */}
       <Card>
         <CardContent className="p-4 flex items-center justify-between">

@@ -59,7 +59,6 @@ export default function LeaveManagement() {
       const data = await res.json();
       if (res.ok) {
         setMessage('Leave applied successfully!');
-        // Reset form fields
         setLeaveType('');
         setStartDate('');
         setEndDate('');

@@ -1,67 +1,51 @@
-"use client"; // Ensure this is a Client Component
 
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { Bell, Globe } from "lucide-react";
 
-const Navbar = () => {
-  const router = useRouter(); // Initialize the router
-
+export default function Navbar() {
   return (
-    <nav className="w-full bg-white shadow-md py-2 px-4 fixed top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Logo Section */}
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center text-black font-bold text-2xl">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="h-8 w-8 mr-2 border border-gray-200 rounded-full"
-            />
-            INSA AMS
-          </Link>
-        </div>
+    <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm">
+      {/* Logo */}
+      <div className="flex items-center">
+        <Link href="/" className="flex items-center text-black font-bold text-2xl">
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="h-8 w-8 mr-2 border border-gray-200 rounded-full"
+          />
+          <span className="font-[Orbitron]">INSA AMS</span>
+        </Link>
+      </div>
+      {/* Navigation Links */}
+      <div className="hidden md:flex space-x-6 text-gray-600">
+        <Link href="/" className="hover:text-gray-600 transition duration-300">
+          Home
+        </Link>
+        <Link href="/about" className="hover:text-gray-600 transition duration-300">
+          About
+        </Link>
+        <Link href="/services" className="hover:text-gray-600 transition duration-300">
+          Services
+        </Link>
+        <Link href="/contact" className="hover:text-gray-600 transition duration-300">
+          Contact
+        </Link>
+      </div>
 
-        {/* Menu Section */}
-        <div className="hidden md:flex items-center space-x-6 text-black font-medium">
-          <Link href="/" className="hover:text-gray-600 transition duration-300">
-            Home
-          </Link>
-          <Link href="/about" className="hover:text-gray-600 transition duration-300">
-            About
-          </Link>
-          <Link href="/services" className="hover:text-gray-600 transition duration-300">
-            Services
-          </Link>
-          <Link href="/contact" className="hover:text-gray-600 transition duration-300">
-            Contact
-          </Link>
+      {/* Right Section */}
+      <div className="flex items-center space-x-4">
+        {/* Notification Icon */}
+        <div className="relative">
+          <Bell className="h-6 w-6 text-gray-600 hover:text-black" />
+          <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
         </div>
-
-        {/* Mobile Menu Toggle (for smaller screens) */}
-        <div className="md:hidden">
-          <button
-            className="text-black hover:text-gray-600 focus:outline-none"
-            aria-label="Toggle Menu"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+        {/* Get Started Button */}
+        <a href="/login">
+          <button className="bg-black text-white px-4 py-2 rounded-full">
+            Get Started
           </button>
-        </div>
+        </a>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}

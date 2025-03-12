@@ -41,7 +41,7 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-brand-white text-gray-800">
+    <div className="min-h-screen bg-brand-white text-gray-800 font-[Orbitron]">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <header className="bg-black text-white opacity-90 rounded-lg p-10 text-center mb-12">

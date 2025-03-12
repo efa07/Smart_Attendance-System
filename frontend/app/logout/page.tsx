@@ -8,8 +8,8 @@ const Logout = () => {
 
     useEffect(() => {
         // Clear user session or token here
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
+        localStorage.clear();
+
         // Redirect to login page
         router.push('/login');
     }, [router]);

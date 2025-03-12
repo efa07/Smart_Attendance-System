@@ -52,7 +52,6 @@ router.post("/clock-in", authenticate, async (req, res) => {
       status = "late";
     }
 
-    // Create attendance record
     const attendance = await prisma.attendance.create({
       data: {
         userId,
@@ -116,7 +115,6 @@ cron.schedule('31 9 * * *', async () => {
   const todayStart = now.clone().startOf('day');
   
   try {
-    // Get all users
     const users = await prisma.user.findMany();
     
     // Check attendance for each user
@@ -148,7 +146,6 @@ cron.schedule('31 9 * * *', async () => {
   timezone: ETHIOPIA_TIMEZONE
 });
 
-// Attendance History
 router.get("/history", authenticate, async (req, res) => {
   const { userId } = req.user;
 
@@ -210,6 +207,95 @@ router.get("/reports", authenticate, async (req, res) => {
     res.json({ records, summary });
   } catch (error) {
     res.status(500).json({ message: "Error generating report", error });
+  }
+});
+router.get('/attendance-summary', async (req, res) => {
+  const filter = req.query.filter; // expected values: weekly, monthly, yearly
+
+  if (!['weekly', 'monthly', 'yearly'].includes(filter)) {
+    return res.status(400).json({
+      error: 'Invalid filter. Please use "weekly", "monthly", or "yearly".'
+    });
+  }
+
+  const now = new Date();
+  let startDate;
+  let groupBy = 'day'; // Default
+
+  if (filter === 'weekly') {
+    const day = now.getDay() === 0 ? 7 : now.getDay(); // Treat Sunday as 7
+    startDate = new Date(now);
+    startDate.setDate(now.getDate() - day + 1); // Move to Monday
+    startDate.setHours(0, 0, 0, 0);
+    groupBy = 'day';
+  } else if (filter === 'monthly') {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    groupBy = 'week';
+  } else if (filter === 'yearly') {
+    startDate = new Date(now.getFullYear(), 0, 1);
+    groupBy = 'month';
+  }
+
+  try {
+    const records = await prisma.attendance.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: now
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+
+    // Helper function to format date labels
+    const formatLabel = (date, format) => {
+      if (format === 'day') {
+        return date.toLocaleDateString('en-US', { weekday: 'short' }); 
+      }
+      if (format === 'week') {
+        const weekNumber = Math.ceil(date.getDate() / 7);
+        return `Week ${weekNumber}`;
+      }
+      if (format === 'month') {
+        return date.toLocaleDateString('en-US', { month: 'short' }); 
+      }
+      return date.toDateString();
+    };
+
+    // Aggregate data
+    const summary = {};
+    records.forEach(record => {
+      const dateLabel = formatLabel(record.createdAt, groupBy);
+
+      if (!summary[dateLabel]) {
+        summary[dateLabel] = { present: 0, absent: 0, overtime: 0 };
+      }
+
+      if (record.status.toLowerCase() === 'present') {
+        summary[dateLabel].present++;
+      } else if (record.status.toLowerCase() === 'absent') {
+        summary[dateLabel].absent++;
+      }
+      summary[dateLabel].overtime += Number(record.overtime) || 0;
+    });
+
+    // Convert summary object to array format
+    const responseData = Object.keys(summary).map(date => ({
+      date,
+      ...summary[date]
+    }));
+
+    return res.json({
+      filter,
+      data: responseData
+    });
+  } catch (error) {
+    console.error('Error fetching attendance data:', error);
+    return res.status(500).json({
+      error: 'An error occurred while fetching attendance data.'
+    });
   }
 });
 

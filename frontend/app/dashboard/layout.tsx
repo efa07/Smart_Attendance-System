@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import SidebarDemo from "../../components/dash/dashcomponets"
+import Navbar from "../../components/navbar";
 
 
 export default function DashboardLayout({
@@ -14,8 +15,6 @@ export default function DashboardLayout({
       <div className="h-100vh">
         <SidebarDemo />
       </div>
-      
-
       {/* Main Content */}
       <div className="flex-1 p-6 bg-gray-100">
         {children}
