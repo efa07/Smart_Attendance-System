@@ -6,8 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import Link from "next/link"
 interface User {
   id: number;
   fullName: string;
@@ -176,30 +176,35 @@ const AdminUserManagement = () => {
   };
 
   return (
-    <div className="p-6 text-black min-h-screen">
-      <h1 className="text-2xl font-bold mb-4 text-center">Admin User Management</h1>
+    <div className="p-6 text-black min-h-screen font-[Rajdhani]">
+      <h1 className="text-3xl mb-4 text-center">Admin User Management</h1>
       <Card className="bg-white text-black">
         <CardContent>
-          <div className="mb-4 flex gap-2">
-            <Input
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-around w-1/3"> <Input
               placeholder="Search Users..."
-              className="bg-white text-black"
+              className="w-fit bg-zinc text-black placeholder-gray-400"
               value={searchQuery}
               onChange={handleSearchChange}
             />
             <Button variant="outline" onClick={handleSearchClick}>
               Search
-            </Button>
+            </Button></div>
+           <Link href="/signup"> <Button variant="outline" onClick={handleSearchClick}>
+              Add User
+            </Button> </Link>
+            
           </div>
+         
           <Table>
             <TableHeader>
-              <TableRow className="bg-white">
-                <TableHead className="text-black">Id</TableHead>
-                <TableHead className="text-black">Name</TableHead>
-                <TableHead className="text-black">Email</TableHead>
-                <TableHead className="text-black">Department</TableHead>
-                <TableHead className="text-black">Role</TableHead>
-                <TableHead className="text-black">Actions</TableHead>
+              <TableRow className="bg-white ">
+                <TableHead className="text-black font-extrabold">Id</TableHead>
+                <TableHead className="text-black font-extrabold">Name</TableHead>
+                <TableHead className="text-black font-extrabold">Email</TableHead>
+                <TableHead className="text-black font-extrabold">Department</TableHead>
+                <TableHead className="text-black font-extrabold">Role</TableHead>
+                <TableHead className="text-black font-extrabold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -5,11 +5,11 @@ export default function FeaturesPage() {
   return (
     <Layout>
       <Head>
-        <title>Attendance Management System - Features</title>
+        <title className='font-[Rajdhani]'>Attendance Management System - Features</title>
         <meta name="description" content="Explore the features of our Attendance Management System." />
       </Head>
 
-      <header className="bg-white shadow-sm py-8">
+      <header className="bg-white shadow-sm py-8 font-[Rajdhani]">
         <div className="container mx-auto px-4 max-w-6xl">
           <h1 className="text-4xl font-extrabold text-center text-gray-800 tracking-tight">
             Features of Attendance Management System
@@ -20,7 +20,7 @@ export default function FeaturesPage() {
       <main className="py-16">
         <div className="container mx-auto px-4 max-w-5xl space-y-12">
           {/* User Roles & Access Control */}
-          <section className="bg-white rounded-xl shadow-md p-8 transition-all hover:shadow-lg">
+          <section className="bg-white rounded-xl shadow-md p-8 transition-all hover:shadow-lg ">
             <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b pb-3 border-gray-200">
               User Roles & Access Control
             </h2>

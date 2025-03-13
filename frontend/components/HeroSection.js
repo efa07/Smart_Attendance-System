@@ -47,9 +47,9 @@ const HeroSection = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-4 px-10 text-center font-[Orbitron]">
-        <h2 className="text-3xl font-bold m4 font-[Orbitron]">Why Choose Our System?</h2>
-        <div className="flex flex-wrap justify-center gap-10 items-start">
+      <section className="py-4 px-10 text-center font-[Rajdhani]">
+      <h2 className="text-3xl font-bold m-4 font-[Rajdhani] uppercase tracking-widest text-neon">Why Choose Our System?</h2>
+      <div className="flex flex-wrap justify-center gap-10 items-start">
           <ThreeDCardDemo data={{ "title": "AI Face Recognition", "description": "Facial recognition ensures precise attendance tracking, eliminating manual errors.", "image": "face.jpg" }} />
           <ThreeDCardDemo data={{ "title": "Finger Print Scanner", "description": "Finger print scan ensures precise attendance tracking, eliminating manual errors when face recognition fails.", "image": "finer.png" }} />
           <ThreeDCardDemo data={{ "title": "Secure & Fast", "description": "Protects data with advanced encryption and processes attendance records in real-time.", "image": "seci.jpg" }} />
@@ -57,8 +57,8 @@ const HeroSection = () => {
         </div>
       </section>
       {/* How It Works Section */}
-      <section className="bg-gray-200 p-12 text-center font-[Orbitron]">
-        <h2 className="text-3xl font-bold mb-6 font-[Orbitron]">How It Works</h2>
+      <section className="bg-gray-200 p-12 text-center font-[Rajdhani]">
+        <h2 className="text-3xl font-bold mb-6 ">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-8">
 
           <div className="p-6 text-center flex flex-col items-center gap-4">

@@ -30,15 +30,16 @@ model User {
 }
 
 model Attendance {
-  id            Int      @id @default(autoincrement())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        Int
-  checkIn       DateTime?
-  checkOut      DateTime?
-  status        String
-  recognizedFace Boolean @default(false)
-  overtime      Int? @default(0)
-  createdAt     DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int
+  checkIn        DateTime?
+  checkOut       DateTime?
+  status         String
+  recognizedFace Boolean  @default(false)
+  overtime       Int?     @default(0)
+  approvedByHR   Boolean  @default(false) 
+  createdAt      DateTime @default(now())
 }
 
 model FaceEncoding {

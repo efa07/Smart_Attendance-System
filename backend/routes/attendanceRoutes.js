@@ -299,4 +299,68 @@ router.get('/attendance-summary', async (req, res) => {
   }
 });
 
+
+// Fetch pending attendance records
+router.get("/pending", async (req, res) => {
+  try {
+    const { search } = req.query;
+    const records = await prisma.attendance.findMany({
+      where: {
+        approvedByHR: false,
+        user: {
+          OR: [
+            { fullName: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+          ],
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+    res.json({ records: records.map((r) => ({
+        id: r.id,
+        employeeName: r.user.fullName,
+        date: r.createdAt.toISOString().split("T")[0],
+        clockIn: r.checkIn,
+        clockOut: r.checkOut,
+        status: r.status,
+      }))
+    });
+  } catch (error) {
+    console.error("Error fetching attendance records:", error);
+    res.status(500).json({ error: "Failed to fetch records" });
+  }
+});
+
+// Approve attendance record
+router.put("/approve/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.attendance.update({
+      where: { id: Number(id) },
+      data: { status: "Approved", approvedByHR: true },
+    });
+    res.json({ message: "Attendance approved successfully" });
+  } catch (error) {
+    console.error("Error approving attendance record:", error);
+    res.status(500).json({ error: "Failed to approve record" });
+  }
+});
+
+// Reject attendance record
+router.put("/reject/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.attendance.update({
+      where: { id: Number(id) },
+      data: { status: "Rejected", approvedByHR: false },
+    });
+    res.json({ message: "Attendance rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting attendance record:", error);
+    res.status(500).json({ error: "Failed to reject record" });
+  }
+});
+
 module.exports = router;

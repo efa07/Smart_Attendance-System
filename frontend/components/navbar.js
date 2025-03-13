@@ -4,7 +4,7 @@ import { Bell, Globe } from "lucide-react";
 
 export default function Navbar() {
   return (
-    <nav className="flex items-center justify-between px-6 py-3 bg-white shadow-sm">
+    <nav className="font-[Rajdhani] flex items-center justify-between px-6 py-3 bg-white shadow-sm">
       {/* Logo */}
       <div className="flex items-center">
         <Link href="/" className="flex items-center text-black font-bold text-2xl">
@@ -13,21 +13,21 @@ export default function Navbar() {
             alt="Logo"
             className="h-8 w-8 mr-2 border border-gray-200 rounded-full"
           />
-          <span className="font-[Orbitron]">INSA AMS</span>
+          <span className="font-[Rajdhani] ">INSA AMS</span>
         </Link>
       </div>
       {/* Navigation Links */}
-      <div className="hidden md:flex space-x-6 text-gray-600">
-        <Link href="/" className="hover:text-gray-600 transition duration-300">
+      <div className="hidden md:flex space-x-6 text-gray-600 font-[Rajdhani]">
+        <Link href="/" className="hover:text-purple-500 transition  duration-300">
           Home
         </Link>
-        <Link href="/about" className="hover:text-gray-600 transition duration-300">
+        <Link href="/about" className="hover:text-purple-500 transition duration-300">
           About
         </Link>
-        <Link href="/services" className="hover:text-gray-600 transition duration-300">
+        <Link href="/services" className="hover:text-purple-500 transition duration-300">
           Services
         </Link>
-        <Link href="/contact" className="hover:text-gray-600 transition duration-300">
+        <Link href="/contact" className="hover:text-purple-500 transition duration-300">
           Contact
         </Link>
       </div>

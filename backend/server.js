@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
-app.use("/api/leave",leaveRoute)
+app.use("/api/leaves",leaveRoute)
 app.use("/api/shift",shiftRoute)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
