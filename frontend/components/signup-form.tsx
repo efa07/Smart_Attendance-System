@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -20,8 +20,14 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
   const [password, setPassword] = useState<string>("");
   const [fullName, setName] = useState<string>("");
   const [role, setRole] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<string | null>(null);
   const [department, setDepartment] = useState<string>("");
   const router = useRouter();
+
+
+  useEffect(() => {
+    setIsAdmin(localStorage.getItem("role"));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +59,12 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
     }
   };
 
+  if (isAdmin !== "hr_admin") {
+    return <h1>Access Denied</h1>;
+  }
+  
   return (
+    
     <form className={cn("flex flex-col gap-5", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Create your account</h1>
@@ -143,5 +154,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         </a>
       </div>
     </form>
+ 
   );
 }

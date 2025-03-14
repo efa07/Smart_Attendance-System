@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Bell, Calendar, Clock, FileText, ChartColumn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {  toast } from 'react-toastify';
 
-export default function EmployeeDashboard({ userId }: { userId: string | null }) {
-  const [status, setStatus] = useState('Not Checked In');
+export default function EmployeeDashboard() {
+  const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
-  const [attendanceData, setAttendanceData] = useState<any[]>([]);
   const router = useRouter();
 
   const fetchAttendanceStatus = async () => {
@@ -42,7 +42,6 @@ export default function EmployeeDashboard({ userId }: { userId: string | null })
         setStatus('Not Checked In');
       }
 
-      setAttendanceData(data);
     } catch (error) {
       console.error('Error fetching attendance status:', error);
       setStatus('Not Checked In');
@@ -72,6 +71,7 @@ export default function EmployeeDashboard({ userId }: { userId: string | null })
         const errorData = await res.json();
         throw new Error(errorData.message || 'Failed to clock in');
       }
+      toast.success("Clock in")
     } catch (error: any) {
       alert(error.message);
     } finally {

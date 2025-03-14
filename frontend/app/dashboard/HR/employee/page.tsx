@@ -15,7 +15,6 @@ interface User {
   department: string;
   role: string;
 }
-
 const AdminUserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -51,35 +50,29 @@ const AdminUserManagement = () => {
     }
   };
 
-  // Fetch users on component mount or when page/limit changes
   useEffect(() => {
     fetchUsers(currentPage, searchQuery);
-  }, [currentPage, limit]);
+  }, [currentPage, limit,searchQuery]);
 
-  // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  // Handle search button click
   const handleSearchClick = () => {
-    setCurrentPage(1); // Reset to the first page when searching
+    setCurrentPage(1); 
     fetchUsers(1, searchQuery);
   };
 
-  // Handle page change
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
-  // Handle input change for editing user
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof User) => {
     if (editingUser) {
       setEditingUser({ ...editingUser, [field]: e.target.value });
     }
   };
 
-  // Handle save button click
   const handleSaveClick = async () => {
     if (!editingUser) return;
 
@@ -149,32 +142,6 @@ const AdminUserManagement = () => {
     }
   };
   
-  // Handle delete button click
-  const handleDeleteClick = async (userId: number) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(
-        `http://localhost:3001/api/employees/delete/${userId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error('Failed to delete user');
-
-      // Remove the deleted user from the list
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-      toast.success('User deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      toast.error('Failed to delete user!');
-    }
-  };
-
   return (
     <div className="p-6 text-black min-h-screen font-[Rajdhani]">
       <h1 className="text-3xl mb-4 text-center">Admin User Management</h1>
@@ -193,9 +160,7 @@ const AdminUserManagement = () => {
            <Link href="/signup"> <Button variant="outline" onClick={handleSearchClick}>
               Add User
             </Button> </Link>
-            
           </div>
-         
           <Table>
             <TableHeader>
               <TableRow className="bg-white ">

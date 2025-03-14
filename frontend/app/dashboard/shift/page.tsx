@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableCell } from "@/components/ui/table";
+import MoonLoader from "react-spinners/ClipLoader";
 
 const API_URL = "http://localhost:3001/api/shift";
 
-const shiftOptions = ["Morning", "Evening", "Night"]; // Shift type options
+const shiftOptions = ["Morning", "Evening", "Night"]; 
 
 const ShiftManagement = () => {
   const [shifts, setShifts] = useState<{ id: number; user: any; shiftType: string; shiftStart: string; shiftEnd: string }[]>([]);
@@ -141,7 +142,7 @@ const ShiftManagement = () => {
   }
 };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <div className="w-full flex justify-center items-center h-screen"><MoonLoader/></div>;
 
 
   return (
@@ -219,7 +220,7 @@ const ShiftManagement = () => {
       </Card>
       </div>
       {/* Assign Shift Section */}
-      <Card>
+      <Card className={role === "employee" ? "hidden" : ""}>
           <CardContent className="space-y-3">
             <h3 className="font-semibold">Assign Shift</h3>
             <Input

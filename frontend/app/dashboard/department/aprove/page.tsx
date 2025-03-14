@@ -118,7 +118,7 @@ const AttendanceApproval = () => {
                 placeholder="Search by employee or date..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-1/3 bg-gray-100 text-black placeholder-gray-500"
+                className="w-1/1.4 bg-gray-100 text-black placeholder-gray-500"
               />
               <Button onClick={fetchAttendanceRecords}>Search</Button>
             </div>
@@ -131,12 +131,12 @@ const AttendanceApproval = () => {
           </div>
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-gray-300">
-                <TableHead className="text-left">Employee</TableHead>
-                <TableHead className="text-left">Date</TableHead>
-                <TableHead className="text-left">Clock In</TableHead>
-                <TableHead className="text-left">Clock Out</TableHead>
-                <TableHead className="text-left">Actions</TableHead>
+              <TableRow className="border-b border-gray-300 ">
+                <TableHead className="text-left font-bold text-black">Employee</TableHead>
+                <TableHead className="text-left font-bold text-black">Date</TableHead>
+                <TableHead className="text-left font-bold text-black">Clock In</TableHead>
+                <TableHead className="text-left font-bold text-black">Clock Out</TableHead>
+                <TableHead className="text-left font-bold text-black">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -160,14 +160,13 @@ const AttendanceApproval = () => {
                       <Button
                         onClick={() => handleApprove(record)}
                         variant="outline"
-                        className="text-green-600"
-                      >
+                        className="text-green-600 font-bold border-green-400">
                         Approve
                       </Button>
                       <Button
                         onClick={() => handleReject(record)}
                         variant="destructive"
-                        className="text-red-600"
+                        className="text-white font-bold border-red-600 ml-8"
                       >
                         Reject
                       </Button>

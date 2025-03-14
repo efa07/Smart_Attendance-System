@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const employeeRoutes = require("./routes/employeeRoutes");
 const leaveRoute = require("./routes/leaveRoute")
+const payRoute = require("./routes/payRoute")
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const multer = require('multer'); // For handling file uploads
 const path = require('path');
@@ -21,6 +22,7 @@ app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/leaves",leaveRoute)
 app.use("/api/shift",shiftRoute)
+app.use("/api/pay",payRoute)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const JWT_SECRET = process.env.JWT_SECRET

@@ -27,16 +27,7 @@ export default function DepartmentHeadDashboard() {
           <Link href="/dashboard/department/leave"><Button variant="outline">Approve</Button></Link>
         </CardContent>
       </Card>
-      {/* Generate Reports */}
-      <Card>
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <FileText size={24} />
-            <h2 className="text-lg font-semibold">Generate Reports</h2>
-          </div>
-          <Button variant="outline">Generate</Button>
-        </CardContent>
-      </Card>
+     
     </div>
   );
 }

@@ -6,7 +6,6 @@ export default function SuperAdminDashboard() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Super Admin Dashboard</h1>
-    
       {/* Attendance Analytics */}
       <Card>
         <CardContent className="p-4 flex items-center justify-between">
@@ -15,8 +14,6 @@ export default function SuperAdminDashboard() {
             <h2 className="text-lg font-semibold">Attendance Analytics</h2>
           </div>
           <Link href="/dashboard/admin/analysis"><Button variant="outline">View Reports</Button></Link>
-
-          
         </CardContent>
       </Card>
       {/* System Settings */}

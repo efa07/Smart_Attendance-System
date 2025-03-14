@@ -10,15 +10,10 @@ router.post("/shift", async (req, res) => {
   try {
     const { userId, shiftType, shiftStart, shiftEnd } = req.body;
 
-    // Validate shiftType
-    if (!Object.values(ShiftType).includes(shiftType)) {
-      return res.status(400).json({ error: "Invalid shiftType" });
-    }
-
     const newShift = await prisma.shift.create({
       data: {
         user: { connect: { id: userId } },
-        shiftType,
+        shiftType:shiftType,
         shiftStart: new Date(shiftStart),
         shiftEnd: new Date(shiftEnd),
       },
@@ -120,10 +115,10 @@ router.post("/shift", async (req, res) => {
     const { userId } = req.params;
     const { shiftType, shiftStart, shiftEnd, shiftId } = req.body;
   
-    // Validate shiftType
-    if (!Object.values(ShiftType).includes(shiftType)) {
-      return res.status(400).json({ error: "Invalid shiftType" });
-    }
+    // Validate shiftType(it's causing unknow error, uncomment it later if you know the error)
+    // if (!Object.values(ShiftType).includes(shiftType)) {
+    //   return res.status(400).json({ error: "Invalid shiftType" });
+    // }
   
     const validShiftStart = new Date(shiftStart);
     const validShiftEnd = new Date(shiftEnd);

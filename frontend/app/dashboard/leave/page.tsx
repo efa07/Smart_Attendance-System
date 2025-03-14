@@ -1,6 +1,8 @@
 "use client"
 import { useState, useEffect } from 'react';
 
+import { toast } from 'react-toastify';
+
 interface Leave {
   id: number;
   leaveType: string;
@@ -22,7 +24,7 @@ export default function LeaveManagement() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch('http://localhost:3001/api/leave/history',
+      const res = await fetch('http://localhost:3001/api/leaves/history',
         {
           headers: {
             'Content-Type': 'application/json',
@@ -39,7 +41,7 @@ export default function LeaveManagement() {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [message]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     const token = localStorage.getItem('token');
@@ -48,7 +50,7 @@ export default function LeaveManagement() {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch('http://localhost:3001/api/leave/apply', {
+      const res = await fetch('http://localhost:3001/api/leaves/apply', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,8 +65,13 @@ export default function LeaveManagement() {
         setStartDate('');
         setEndDate('');
         fetchHistory();
-      } else {
+        toast.success("Leave applied successfully!")
+
+      } 
+      else {
         setMessage(data.message || 'Error applying for leave');
+        toast.error("Error applying for leave")
+
       }
     } catch (error) {
       setMessage('Error applying for leave');

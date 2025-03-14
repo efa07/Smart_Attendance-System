@@ -16,9 +16,7 @@ export default function HRManagerDashboard() {
           </div>
           <Link href="/dashboard/HR/employee"><Button variant="outline">Manage</Button></Link>
         </CardContent>
-      </Card>
-    
-     
+      </Card> 
       {/* Reports & Payroll */}
       <Card>
         <CardContent className="p-4 flex items-center justify-between">
