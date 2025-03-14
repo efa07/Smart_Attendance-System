@@ -92,7 +92,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Cleanup
+# Cleanup 
 video_capture.release()
 cv2.destroyAllWindows()
 cursor.close()
