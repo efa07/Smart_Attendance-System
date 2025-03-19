@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import React, {
   createContext,
   useState,
@@ -10,6 +9,7 @@ import React, {
   useEffect,
 } from "react";
 
+// Context now typed correctly to match the expected value
 const MouseEnterContext = createContext<
   [boolean, React.Dispatch<React.SetStateAction<boolean>>] | undefined
 >(undefined);
@@ -35,16 +35,17 @@ export const CardContainer = ({
     containerRef.current.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
   };
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = () => {
     setIsMouseEntered(true);
     if (!containerRef.current) return;
   };
 
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = () => {
     if (!containerRef.current) return;
     setIsMouseEntered(false);
     containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
   };
+
   return (
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
       <div
@@ -116,10 +117,10 @@ export const CardItem = ({
   rotateX?: number | string;
   rotateY?: number | string;
   rotateZ?: number | string;
-  [key: string]: any;
-}) => {
+  // Use the correct prop type based on the element `as`
+} & React.HTMLProps<HTMLElement>) => { // This will ensure you inherit props for the correct element type
   const ref = useRef<HTMLDivElement>(null);
-  const [isMouseEntered] = useMouseEnter();
+  const [isMouseEntered] = useMouseEnter(); // Now correctly typed
 
   useEffect(() => {
     handleAnimations();
@@ -146,10 +147,10 @@ export const CardItem = ({
 };
 
 // Create a hook to use the context
-export const useMouseEnter = () => {
+export const useMouseEnter = (): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
   const context = useContext(MouseEnterContext);
   if (context === undefined) {
     throw new Error("useMouseEnter must be used within a MouseEnterProvider");
   }
-  return context;
+  return context; // Return the context properly typed
 };

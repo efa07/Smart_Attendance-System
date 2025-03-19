@@ -4,17 +4,30 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+interface DecodedToken {
+  username: string;
+  role: string;
+  department: string;
+  userId: string;
+  profilePic?: string; // Optional 
+}
+
+// Define expected structure of API response
+interface LoginResponse {
+  token: string;
+}
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,45 +35,51 @@ export function LoginForm({
 
     // Basic validation
     if (!email || !password) {
-      alert('All fields are required');
+      alert("All fields are required");
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      alert('Please enter a valid email address');
+      alert("Please enter a valid email address");
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/login', {
-        email,
-        password,
-      });
+      const response = await axios.post<LoginResponse>(
+        `${API_URL}/api/login`,
+        { email, password }
+      );
 
       const { token } = response.data;
 
-      // Decode the token to get user details
-      const decoded = jwtDecode(token);
-      const { username, role, department, userId, profilePic }: any = decoded;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('username', username);
-      localStorage.setItem('role', role);
-      localStorage.setItem('department', department);
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('profilePic', profilePic);
+      // Decode the token with proper typing
+      const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+      const { username, role, department, userId, profilePic } = decoded;
 
-      // Log the profilePic from local storage for debugging
+      // Store user details in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("username", username);
+      localStorage.setItem("role", role);
+      localStorage.setItem("department", department);
+      localStorage.setItem("userId", String(userId));  // Convert to string
+      localStorage.setItem("profilePic", profilePic || ""); 
 
-      router.push('/dashboard');
-    } catch (error: any) {
-      console.error('Login error:', error);
-      alert(error.response?.data?.error || 'An error occurred during login');
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(
+        "An error occurred during login"
+      );
     }
   };
 
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-muted-foreground text-sm text-balance">

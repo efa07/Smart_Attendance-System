@@ -9,7 +9,7 @@ const ContactUs = () => {
       <header className="w-full max-w-6xl px-4 py-8 mx-auto text-center">
         <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
         <p className="text-lg text-gray-700">
-          We'd love to hear from you! Feel free to reach out via any of the methods below.
+          We would love to hear from you! Feel free to reach out via any of the methods below.
         </p>
       </header>
 

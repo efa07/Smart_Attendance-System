@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react';
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 interface AttendanceRecord {
   date: string;
   checkIn: string;
@@ -22,7 +22,7 @@ export default function AttendanceReports() {
       const params = new URLSearchParams();
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
-      const res = await fetch(`http://localhost:3001/api/attendance/reports?${params.toString()}`, {
+      const res = await fetch(`${API_URL}/api/attendance/reports?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -115,15 +115,15 @@ export default function AttendanceReports() {
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-gray-100 rounded p-4 text-center">
             <p className="text-gray-700">Present</p>
-            <p className="text-xl font-bold text-gray-900">{summary.Present || 0}</p>
+            <p className="text-xl font-bold text-gray-900">{summary.present || 0}</p>
           </div>
           <div className="bg-gray-100 rounded p-4 text-center">
             <p className="text-gray-700">Late</p>
-            <p className="text-xl font-bold text-gray-900">{summary.Late || 0}</p>
+            <p className="text-xl font-bold text-gray-900">{summary.late || 0}</p>
           </div>
           <div className="bg-gray-100 rounded p-4 text-center">
             <p className="text-gray-700">Absent</p>
-            <p className="text-xl font-bold text-gray-900">{summary.Absent || 0}</p>
+            <p className="text-xl font-bold text-gray-900">{summary.absent || 0}</p>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react';
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { toast } from 'react-toastify';
 
 interface Leave {
@@ -24,7 +24,7 @@ export default function LeaveManagement() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch('http://localhost:3001/api/leaves/history',
+      const res = await fetch(`${API_URL}/api/leaves/history`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export default function LeaveManagement() {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch('http://localhost:3001/api/leaves/apply', {
+      const res = await fetch(`${API_URL}/api/leaves/apply`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ export default function LeaveManagement() {
 
       }
     } catch (error) {
-      setMessage('Error applying for leave');
+      console.error('Error applying for leave', error);
     } finally {
       setLoading(false);
     }

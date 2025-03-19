@@ -1,6 +1,7 @@
 const express = require("express");
 const prisma = require("../prismaClient");
 const authenticate = require("../middleware/authMiddleware");
+const emailSender = require("../sendEmail");
 
 const router = express.Router();
 
@@ -15,8 +16,8 @@ router.post("/apply", authenticate, async (req, res) => {
         leaveType,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        status: "pending" 
-      }
+        status: "pending",
+      },
     });
     res.json({ message: "Leave applied successfully", leave: newLeave });
   } catch (error) {
@@ -24,13 +25,12 @@ router.post("/apply", authenticate, async (req, res) => {
   }
 });
 
-
 router.get("/history", authenticate, async (req, res) => {
   const { userId } = req.user;
   try {
     const leaves = await prisma.leave.findMany({
       where: { userId },
-      orderBy: { startDate: "desc" }
+      orderBy: { startDate: "desc" },
     });
     res.json(leaves);
   } catch (error) {
@@ -38,11 +38,14 @@ router.get("/history", authenticate, async (req, res) => {
   }
 });
 
-
 // Get all leave requests
 router.get("/", async (req, res) => {
   try {
-    const leaveRequests = await prisma.leave.findMany();
+    const leaveRequests = await prisma.leave.findMany({
+      include: {
+        user: { select: { fullName: true, email: true } }, // Fetch user details
+      },
+    });
     res.json(leaveRequests);
   } catch (error) {
     console.error("Error fetching leave requests:", error);
@@ -60,10 +63,20 @@ router.put("/:id", async (req, res) => {
   }
 
   try {
+    // Update leave status
     const updatedLeave = await prisma.leave.update({
       where: { id: Number(id) },
       data: { status },
+      include: {
+        user: { select: { fullName: true, email: true } },
+      },
     });
+
+    // Send email notification
+    if (updatedLeave.user) {
+      const { email, fullName } = updatedLeave.user;
+      await emailSender(email, fullName, status); 
+    }
 
     res.json(updatedLeave);
   } catch (error) {
@@ -71,6 +84,5 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 module.exports = router;

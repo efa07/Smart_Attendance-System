@@ -21,6 +21,7 @@ function getEthiopiaTime() {
 router.post("/clock-in", authenticate, async (req, res) => {
   const { userId } = req.user;
   const now = getEthiopiaTime();
+  console.log(now)
   
   try {
     // Get today's boundaries in Ethiopia time

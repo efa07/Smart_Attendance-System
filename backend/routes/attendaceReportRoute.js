@@ -4,13 +4,12 @@ const authenticate = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Attendance Reports Endpoint
 router.get("/reports", authenticate, async (req, res) => {
   const { userId } = req.user;
   const { startDate, endDate } = req.query;
 
   try {
-    // the filter condition
+    // filter
     const whereCondition = {
       userId,
       checkIn: {}

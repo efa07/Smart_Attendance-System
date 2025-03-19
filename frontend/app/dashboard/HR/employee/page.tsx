@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import Link from "next/link"
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 interface User {
   id: number;
   fullName: string;
@@ -20,7 +21,7 @@ const AdminUserManagement = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -30,7 +31,7 @@ const AdminUserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(
-        `http://localhost:3001/api/employees/alluser?search=${query}&page=${page}&limit=${limit}`,
+        `${API_URL}/api/employees/alluser?search=${query}&page=${page}&limit=${limit}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -79,7 +80,7 @@ const AdminUserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(
-        `http://localhost:3001/api/employees/edit/${editingUser.id}`,
+        `${API_URL}/api/employees/edit/${editingUser.id}`,
         {
           method: 'PUT',
           headers: {
@@ -119,7 +120,7 @@ const AdminUserManagement = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(
-        `http://localhost:3001/api/employees/delete/${deleteUserId}`,
+        `${API_URL}/api/employees/delete/${deleteUserId}`,
         {
           method: 'DELETE',
           headers: {

@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { Bell, Globe } from "lucide-react";
+import { Bell } from "lucide-react";
 
 export default function Navbar() {
   return (

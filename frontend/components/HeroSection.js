@@ -3,7 +3,7 @@ import React from "react";
 import { BackgroundBeamsWithCollision } from "../components/ui/background-beams-with-collision"
 import { ScanFace, LocateFixed, UserRoundPlus } from "lucide-react"
 import ThreeDCardDemo from "../components/card";
-import InfiniteHorizontalScroll from "./InfiniteCard"
+// import InfiniteHorizontalScroll from "./InfiniteCard"
 
 const HeroSection = () => {
   return (
@@ -82,11 +82,11 @@ const HeroSection = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="p-12 text-center font-[Orbitron]">
+      {/* <section className="p-12 text-center font-[Orbitron]">
         <h2 className="text-3xl font-bold mb-6 font-[Orbitron]">What Our Users Say</h2>
 
         <InfiniteHorizontalScroll />
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="bg-gray-700 text-white p-6 text-center font-[Orbitron]">

@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface LeaveRequest {
   id: number;
@@ -26,7 +27,7 @@ const LeaveRequests: React.FC = () => {
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/leaves");
+        const response = await fetch(`${API_URL}/api/leaves`);
         const data = await response.json();
         setLeaveRequests(data);
       } catch (error) {
@@ -39,7 +40,7 @@ const LeaveRequests: React.FC = () => {
 
   const updateLeaveStatus = async (id: number, newStatus: "approved" | "disapproved") => {
     try {
-      const response = await fetch(`http://localhost:3001/api/leaves/${id}`, {
+      const response = await fetch(`${API_URL}/api/leaves/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

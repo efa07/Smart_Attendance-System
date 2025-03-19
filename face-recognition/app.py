@@ -1,10 +1,10 @@
 import cv2
 import face_recognition
 import psycopg2
-from datetime import datetime, timedelta
-import redis  # Add Redis client
+from datetime import datetime, timedelta # make it ethiopia time later or when in production
+import redis  
 
-# Database Configuration
+# Database config
 DB_CONFIG = {
     'dbname': 'attendance_db',
     'user': 'admin',
@@ -13,10 +13,10 @@ DB_CONFIG = {
     'port': 5432
 }
 
-# Redis Configuration
+# redis config
 redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
-# Initialize known faces and mappings
+# initialize known faces and mapping
 known_face_encodings = []
 known_face_names = []
 name_to_userId = {}
@@ -25,7 +25,7 @@ name_to_userId = {}
 conn = psycopg2.connect(**DB_CONFIG)
 cursor = conn.cursor()
 
-# Fetch users from database
+# Fetch
 cursor.execute('SELECT id, "fullName" FROM "User"')
 users = cursor.fetchall()
 for user_id, fullName in users:
@@ -33,19 +33,21 @@ for user_id, fullName in users:
 
 # Load known images
 known_person_image = face_recognition.load_image_file("/home/x/Desktop/face-attendance-system/face-recognition/Berule.jpg")
-known_person2_image = face_recognition.load_image_file("/home/x/Desktop/face-attendance-system/face-recognition/dagen.jpg")
+known_person2_image = face_recognition.load_image_file("/home/x/Desktop/face-attendance-system/face-recognition/melaku.jpg")
 
 known_face_encodings = [
     face_recognition.face_encodings(known_person_image)[0],
     face_recognition.face_encodings(known_person2_image)[0]
 ]
-known_face_names = ["Berule", "Dagen"]
+
+# just for testing
+known_face_names = ["Efa", "Melaku"]
 
 video_capture = cv2.VideoCapture(0)
 
 while True:
     ret, frame = video_capture.read()
-    frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+    frame = cv2.resize(frame, (0, 0), fx=1, fy=1)
 
     face_locations = face_recognition.face_locations(frame)
     face_encodings = face_recognition.face_encodings(frame, face_locations)
@@ -75,7 +77,7 @@ while True:
                         ''', (user_id, datetime.now(), "present", True))
                         conn.commit()
 
-                        # Set Redis key with 24-hour expiration
+                        # Set redis 24-hour expiration
                         redis_client.set(redis_key, "1", ex=timedelta(hours=24))
                         print(f"Checked in: {name} ({user_id})")
                     except Exception as e:
@@ -84,8 +86,9 @@ while True:
 
         # Draw rectangles and labels
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-        cv2.rectangle(frame, (left, bottom - 10), (right, bottom), (0, 0, 255), cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom - 20), (right, bottom), (0, 0, 255), cv2.FILLED)
         cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255), 1)
+        
 
     cv2.imshow('Video', frame)
 

@@ -1,30 +1,40 @@
-"use client"
-import { useState } from "react";
+"use client";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { toast } from 'react-toastify';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+interface User {
+  fullName: string;
+  email: string;
+  password: string;
+  department: string;
+  profilePic: string;
+}
 
 export default function ProfileSettings() {
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<User>({
     fullName: "",
     email: "",
     password: "",
     department: "",
-    profilePic: ""
+    profilePic: "",
   });
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
 
-  const handleChange = (e: any ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: any) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
     const token = localStorage.getItem('token');
@@ -36,16 +46,16 @@ export default function ProfileSettings() {
     if (file) formData.append("profilePic", file);
 
     try {
-      await axios.put("http://localhost:3001/api/update", formData, {
+      await axios.put(`${API_URL}/api/update`, formData, {
         headers: { 
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("Profile updated successfully")
+      toast.success("Profile updated successfully");
     } catch (error) {
       console.error(error);
-      toast.error("Error updating profile")
+      toast.error("Error updating profile");
     }
   };
 
@@ -76,7 +86,7 @@ export default function ProfileSettings() {
           />
         </div>
         <div>
-          <Label htmlFor="department">Password</Label>
+          <Label htmlFor="password">Password</Label>
           <Input
             type="password"
             id="password"
@@ -99,7 +109,12 @@ export default function ProfileSettings() {
         </div>
         <div>
           <Label htmlFor="profilePic">Profile Picture</Label>
-          <Input type="file" id="profilePic" onChange={handleFileChange} className="w-full p-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none" />
+          <Input
+            type="file"
+            id="profilePic"
+            onChange={handleFileChange}
+            className="w-full p-2 rounded-md bg-gray-100 border border-gray-300 focus:outline-none"
+          />
         </div>
         <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800">Update Profile</Button>
       </form>

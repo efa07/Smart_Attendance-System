@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, BarChart, Settings, FileText, CalendarCheck } from "lucide-react";
+import {  BarChart, Settings } from "lucide-react";
 import Link from "next/link"
 export default function SuperAdminDashboard() {
   return (

@@ -10,6 +10,7 @@ Thumbs.db
 build/
 dist/
 out/
+fron backup/
 
 .env
 .env.local

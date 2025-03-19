@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '../../../../components/ui/badge';
 import { DollarSign, Clock, Calendar, User } from 'lucide-react';
 import { Button } from '../../../../components/ui/button';
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 interface PayrollData {
   id: number;
   name: string;
@@ -22,7 +22,7 @@ export default function PayrollReports() {
   const [payrollData, setPayrollData] = useState<PayrollData[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/pay/payroll')
+    fetch(`${API_URL}/api/pay/payroll`)
       .then((res) => res.json())
       .then((data: PayrollData[]) => setPayrollData(data))
       .catch((error) => console.error('Error fetching payroll data:', error));

@@ -1,7 +1,7 @@
 "use client"
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "../components/navbar";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import "./globals.css";

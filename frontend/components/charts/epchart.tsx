@@ -18,7 +18,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const AttendanceTrend = () => {
   const [chartData, setChartData] = useState([]);
   const [token, setToken] = useState<string | null>(null);
@@ -43,7 +43,7 @@ const AttendanceTrend = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/attendance/history`,
+          `${API_URL}/api/attendance/history`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -80,8 +80,8 @@ const AttendanceTrend = () => {
   };
 
   return (
-<div className="w-full mt-24 flex flex-row">
-  <Card className="w-full ">
+<div className="flex  flex-row h-full w-full items-center justify-center">
+  <Card className="w-6/12">
         <CardHeader>
           <CardTitle>Attendance Chart</CardTitle>
           <CardDescription>Check-ins over the past 30 days</CardDescription>
@@ -105,7 +105,7 @@ const AttendanceTrend = () => {
                   const minutes = ((value % 1) * 60).toFixed(0);
                   return `${hours}:${minutes.toString().padStart(2, "0")}`;
                 }}
-                domain={[8, 21]} // Set domain from 8:00 AM to 9:00 PM
+                domain={[8, 21]} //set domain from 8:00 AM to 9:00 PM
               />
               <ChartTooltip
                 cursor={false}
@@ -121,9 +121,6 @@ const AttendanceTrend = () => {
           </ChartContainer>
         </CardContent>
         <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
           <div className="leading-none text-muted-foreground">
             Showing check-ins for the last 30 days
           </div>

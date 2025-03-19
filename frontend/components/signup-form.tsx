@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export function SignUpForm({ className, ...props }: React.ComponentProps<"form">) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -23,8 +22,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
   const [isAdmin, setIsAdmin] = useState<string | null>(null);
   const [department, setDepartment] = useState<string>("");
   const router = useRouter();
-
-
+  
   useEffect(() => {
     setIsAdmin(localStorage.getItem("role"));
   }, []);
@@ -44,7 +42,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
     }
 
     try {
-      const response = await axios.post("http://localhost:3001/api/signup", {
+      const response = await axios.post(`${API_URL}/api/signup`, {
         fullName,
         email,
         password,
@@ -53,9 +51,9 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
       });
       alert(response.data.message);
       router.push("/login")
-    } catch (error: any) {
+    } catch (error) {
       console.error("Signup error:", error);
-      alert(error.response?.data?.error || "An error occurred during signup");
+      alert("An error occurred during signup");
     }
   };
 

@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarCheck, ClipboardCheck, FileText, BarChart } from "lucide-react";
+import { CalendarCheck, ClipboardCheck } from "lucide-react";
 import Link from "next/link"
 
 export default function DepartmentHeadDashboard() {

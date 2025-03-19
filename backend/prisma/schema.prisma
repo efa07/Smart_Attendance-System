@@ -14,19 +14,22 @@ enum ShiftType {
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
-  fullName     String
-  email        String @unique
-  password     String
-  role         String
-  department   String?
-  profilePic   String?
-  createdAt    DateTime @default(now())
-  attendance   Attendance[]
-  faceEncoding FaceEncoding? 
-  shifts       Shift[] 
-  leaves       Leave[]
-  notifications Notification[]
+  id             Int           @id @default(autoincrement())
+  fullName       String
+  email          String        @unique
+  password       String
+  role           String
+  department     String?
+  profilePic     String?
+  createdAt      DateTime      @default(now())
+  attendance     Attendance[]
+  faceEncoding   FaceEncoding? 
+  shifts         Shift[] 
+  leaves         Leave[]
+  isAdmin        Boolean       @default(false)
+  notifications  Notification[]
+  fingerprintId  String?       
+  rfidId         String?  
 }
 
 model Attendance {
@@ -38,9 +41,13 @@ model Attendance {
   status         String
   recognizedFace Boolean  @default(false)
   overtime       Int?     @default(0)
-  approvedByHR   Boolean  @default(false) 
+  toleranceTime  Int      @default(10)
+  fingerprintId  String?  // You can keep these to log which fingerprint was used at check-in
+  rfidId         String?  // You can keep these to log which RFID was used at check-in
   createdAt      DateTime @default(now())
 }
+
+
 
 model FaceEncoding {
   id        Int    @id @default(autoincrement())

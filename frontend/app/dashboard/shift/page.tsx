@@ -6,15 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableCell } from "@/components/ui/table";
 import MoonLoader from "react-spinners/ClipLoader";
-
-const API_URL = "http://localhost:3001/api/shift";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const shiftOptions = ["Morning", "Evening", "Night"]; 
 
 const ShiftManagement = () => {
-  const [shifts, setShifts] = useState<{ id: number; user: any; shiftType: string; shiftStart: string; shiftEnd: string }[]>([]);
-  const [newShift, setNewShift] = useState({ shiftType: "", shiftStart: "", shiftEnd: "" });
-  const [assignments, setAssignments] = useState<{ employee: string; shift: string }[]>([]);
+  const [shifts, setShifts] = useState<{ 
+    id: number; 
+    user: { fullName: string }; 
+    shiftType: string; 
+    shiftStart: string; 
+    shiftEnd: string 
+  }[]>([]);
+    const [newShift, setNewShift] = useState({ shiftType: "", shiftStart: "", shiftEnd: "" });
   const [employee, setEmployee] = useState("");
   const [selectedShift, setSelectedShift] = useState("");
   const [shift, setShift] = useState({ shiftType: "", shiftStart: "", shiftEnd: "", id: 0 });
@@ -36,7 +39,7 @@ const ShiftManagement = () => {
   useEffect(() => {
     const fetchShifts = async () => {
       try {
-        const response = await fetch(`${API_URL}/shifts`);
+        const response = await fetch(`${API_URL}/api/shift/shifts`);
         const data = await response.json();
         setShifts(data);
       } catch (error) {
@@ -51,7 +54,7 @@ const ShiftManagement = () => {
     if (!newShift.shiftType || !newShift.shiftStart || !newShift.shiftEnd) return;
 
     try {
-      const response = await fetch(`${API_URL}/shift`, {
+      const response = await fetch(`${API_URL}/api/shift/shift`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -77,7 +80,7 @@ const ShiftManagement = () => {
     const fetchUserShift = async () => {
       if (!userId) return;
       try {
-        const response = await fetch(`${API_URL}/${userId}`);
+        const response = await fetch(`${API_URL}/api/shift/${userId}`);
         if (response.ok) {
           const data = await response.json();
           setShift(data);
@@ -97,7 +100,7 @@ const ShiftManagement = () => {
     if (!shift.id || !shift.shiftType || !shift.shiftStart || !shift.shiftEnd) return;
 
     try {
-      const response = await fetch(`${API_URL}/${userId}`, {
+      const response = await fetch(`${API_URL}/api/shift/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -123,7 +126,7 @@ const ShiftManagement = () => {
   if (!selectedShiftData) return;
 
   try {
-    const response = await fetch(`${API_URL}/assign-shift`, {
+    const response = await fetch(`${API_URL}/api/shift/assign-shift`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

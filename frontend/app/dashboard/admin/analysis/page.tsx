@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const AttendanceAnalytics = () => {
   const [attendanceData, setAttendanceData] = useState([]);
@@ -12,7 +13,7 @@ const AttendanceAnalytics = () => {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/attendance/attendance-summary?filter=${timeRange}`);
+        const response = await fetch(`${API_URL}/api/attendance/attendance-summary?filter=${timeRange}`);
         const jsonData = await response.json();
         setAttendanceData(jsonData.data);
       } catch (error) {

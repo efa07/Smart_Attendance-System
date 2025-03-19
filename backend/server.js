@@ -16,7 +16,7 @@ const shiftRoute = require("./routes/shiftRoute")
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(cors());
+app.use(cors("*"));
 app.use(express.json());
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
@@ -30,7 +30,7 @@ const fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Store uploaded files in the "uploads" directory
+    cb(null, 'uploads/'); // Store uploaded images in the "uploads" dir
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -47,6 +47,9 @@ if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
 
+app.get("/", async(req,res) =>{
+  res.send("it working")
+})
 app.post('/api/signup', async (req, res) => {
   const {  email,password,fullName,role,department } = req.body;
 

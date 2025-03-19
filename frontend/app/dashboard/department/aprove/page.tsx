@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface AttendanceRecord {
   id: number;
@@ -33,7 +34,7 @@ const AttendanceApproval = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3001/api/attendance/pending?search=${searchQuery}`,
+        `${API_URL}/api/attendance/pending?search=${searchQuery}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -60,7 +61,7 @@ const AttendanceApproval = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3001/api/attendance/approve/${record.id}`,
+        `${API_URL}/api/attendance/approve/${record.id}`,
         {
           method: "PUT",
           headers: {
@@ -82,7 +83,7 @@ const AttendanceApproval = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3001/api/attendance/reject/${record.id}`,
+        `${API_URL}/api/attendance/reject/${record.id}`,
         {
           method: "PUT",
           headers: {
