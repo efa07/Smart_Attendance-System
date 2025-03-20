@@ -38,16 +38,14 @@ model Attendance {
   userId         Int
   checkIn        DateTime?
   checkOut       DateTime?
-  status         String
+  status         String?
+  clockOutStatus String? 
   recognizedFace Boolean  @default(false)
   overtime       Int?     @default(0)
-  toleranceTime  Int      @default(10)
-  fingerprintId  String?  // You can keep these to log which fingerprint was used at check-in
-  rfidId         String?  // You can keep these to log which RFID was used at check-in
+  fingerprintId  String?  
+  rfidId         String? 
   createdAt      DateTime @default(now())
 }
-
-
 
 model FaceEncoding {
   id        Int    @id @default(autoincrement())

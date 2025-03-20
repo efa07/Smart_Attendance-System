@@ -1,151 +1,198 @@
 const express = require("express");
 const prisma = require("../prismaClient");
 const authenticate = require("../middleware/authMiddleware");
-const moment = require("moment-timezone");
-const cron = require("node-cron");
+const { AttendanceMethod } = require("../middleware/constants"); 
+const { validateClockInRequest } = require("../middleware/validators"); 
+const { getLocalTime } = require("../middleware/utils");
+
+const moment = require("moment");
 
 const router = express.Router();
 
-// Configure Ethiopian time (UTC+3)
-const ETHIOPIA_TIMEZONE = "Africa/Addis_Ababa";
-const WORK_START = { hour: 8, minute: 30 };
-const LATE_CUTOFF = { hour: 9, minute: 0 };
-const ABSENT_CUTOFF = { hour: 9, minute: 30 };
 
-// Helper function to get current Ethiopia time
-function getEthiopiaTime() {
-  return moment().tz(ETHIOPIA_TIMEZONE);
-}
-
-// Clock In Endpoint
 router.post("/clock-in", authenticate, async (req, res) => {
   const { userId } = req.user;
-  const now = getEthiopiaTime();
-  console.log(now)
-  
-  try {
-    // Get today's boundaries in Ethiopia time
-    const todayStart = now.clone().startOf('day');
-    const todayEnd = now.clone().endOf('day');
+  const { key, method } = req.body;
+  const toleranceTime = 20; //minutes
 
-    // Check existing attendance
+  //validate req.body
+  const validationError = validateClockInRequest(req.body);
+  if (validationError) {
+    return res.status(400).json({ message: validationError });
+  }
+
+  const now = getLocalTime();
+
+  // morning shift boundaries
+  const morningStart = now.clone().set({ hour: 8, minute: 30, second: 0, millisecond: 0 });
+  const morningToleranceEnd = morningStart.clone().add(toleranceTime, "minutes"); 
+  const morningLateEnd = morningStart.clone().add(1, "hour"); 
+  const morningShiftEnd = now.clone().set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
+
+  // afternoon shift boundaries (for today's date)
+  const afternoonStart = now.clone().set({ hour: 13, minute: 0, second: 0, millisecond: 0 });
+  const afternoonToleranceEnd = afternoonStart.clone().add(10, "minutes");
+  const afternoonLateEnd = afternoonStart.clone().add(1, "hour");
+  const afternoonShiftEnd = now.clone().set({ hour: 17, minute: 0, second: 0, millisecond: 0 });
+
+  // Determine which shift we are in based on the current time
+  let shift = null;
+  if (now.isBetween(morningStart.clone().subtract(1, "hour"), morningShiftEnd, null, "[)")) {
+    // clock-in up until noon belongs to the morning shift.
+    shift = "morning";
+  } else if (now.isBetween(afternoonStart.clone().subtract(1, "hour"), afternoonShiftEnd, null, "[)")) {
+    // Similarly, clock-in up until 5pm is considered the afternoon shift.
+    shift = "afternoon";
+  } else {
+    return res.status(400).json({ message: "Clock-in time is outside valid shift hours" });
+  }
+
+  // Define search boundaries for an existing record for the shift.
+  let shiftStart, shiftEnd;
+  if (shift === "morning") {
+    shiftStart = morningStart.toDate();
+    shiftEnd = morningShiftEnd.toDate();
+  } else {
+    shiftStart = afternoonStart.clone().subtract(1, "hour").toDate();
+    shiftEnd = afternoonShiftEnd.toDate();
+  }
+
+  try {
     const existing = await prisma.attendance.findFirst({
       where: {
         userId,
         checkIn: {
-          gte: todayStart.toDate(),
-          lt: todayEnd.toDate()
-        }
-      }
+          gte: shiftStart,
+          lt: shiftEnd,
+        },
+      },
     });
 
     if (existing) {
-      return res.status(400).json({ message: "Already clocked in today" });
+      return res.status(400).json({ message: `Already clocked in for the ${shift} shift today` });
     }
 
-    // Determine attendance status
-    let status = "absent";
-    const checkInTime = now.format("HH:mm");
-
-    if (now.isBefore(moment.tz(ETHIOPIA_TIMEZONE).set(LATE_CUTOFF))) {
-      status = "present";
-    } else if (now.isBefore(moment.tz(ETHIOPIA_TIMEZONE).set(ABSENT_CUTOFF))) {
-      status = "late";
+    // Calculate attendance status based on the shift and clock-in time.
+    let status = "";
+    if (shift === "morning") {
+      if (now.isBefore(morningStart)) {
+        status = "early";
+      } else if (now.isBetween(morningStart, morningToleranceEnd, null, "[)")) {
+        status = "in_time";
+      } else if (now.isBetween(morningToleranceEnd, morningLateEnd, null, "[)")) {
+        status = "late";
+      } else {
+        // clock-in after 9:30am but before 12:00am isabsent
+        status = "very_late";
+      }
+    } else if (shift === "afternoon") {
+      if (now.isBefore(afternoonStart)) {
+        status = "early";
+      } else if (now.isBetween(afternoonStart, afternoonToleranceEnd, null, "[)")) {
+        status = "in_time";
+      } else if (now.isBetween(afternoonToleranceEnd, afternoonLateEnd, null, "[)")) {
+        status = "late";
+      } else {
+        // lock-in after 2:00 but before 5:00 is absent
+        status = "very_late";
+      }
     }
 
+    // Create the attendanc
     const attendance = await prisma.attendance.create({
       data: {
         userId,
         checkIn: now.toDate(),
-        status
-      }
+        status,
+        [key === AttendanceMethod.FingerPrint ? "fingerprintId" : "rfidId"]: method,
+      },
     });
 
     res.json({
-      message: "Clocked in successfully",
-      checkInTime,
+      message: `Clocked in successfully for the ${shift} shift`,
+      checkInTime: now.format("HH:mm"),
       status,
-      attendance
+      attendance,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error clocking in", error });
+    console.error("Error:", error);
+    res.status(500).json({ message: "Error clocking in", error: error.message });
   }
 });
 
-// Clock Out Endpoint
 router.post("/clock-out", authenticate, async (req, res) => {
   const { userId } = req.user;
-  const now = getEthiopiaTime();
+  const now = getLocalTime();
 
   try {
-    // Find today's attendance
+    // Find today's attendance record that hasn't been checked out
     const todayStart = now.clone().startOf('day');
     const attendance = await prisma.attendance.findFirst({
       where: {
         userId,
-        checkIn: {
-          gte: todayStart.toDate()
-        },
-        checkOut: null
-      }
+        checkIn: { gte: todayStart.toDate() },
+        checkOut: null,
+      },
     });
 
     if (!attendance) {
       return res.status(400).json({ message: "No active check-in found" });
     }
 
-    // Update check-out time
+    // Determine the shift based on the check-in time.
+    // For simplicity, if the check-in was before 12:00 PM, consider it a morning shift; otherwise, afternoon.
+    const checkInTime = moment(attendance.checkIn); // Ensure moment is imported if you're using it
+    let shift = "";
+    if (checkInTime.hour() < 12) {
+      shift = "morning";
+    } else {
+      shift = "afternoon";
+    }
+
+    // Define the scheduled shift end and tolerance windows.
+    let shiftEnd, toleranceWindowEnd;
+    if (shift === "morning") {
+      // Morning shift: ends at 12:00 PM with a 10-minute tolerance.
+      shiftEnd = now.clone().set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
+      toleranceWindowEnd = shiftEnd.clone().add(10, "minutes");
+    } else {
+      // Afternoon shift: ends at 5:00 PM with a 10-minute tolerance.
+      shiftEnd = now.clone().set({ hour: 17, minute: 0, second: 0, millisecond: 0 });
+      toleranceWindowEnd = shiftEnd.clone().add(10, "minutes");
+    }
+
+    // Calculate clock-out status based on how the clock-out time compares to the scheduled shift end.
+    let clockOutStatus = "";
+    if (now.isBefore(shiftEnd)) {
+      clockOutStatus = "early_leave";
+    } else if (now.isSameOrBefore(toleranceWindowEnd)) {
+      clockOutStatus = "on_time_leave";
+    } else {
+      clockOutStatus = "overtime";
+    }
+
+    // Update the attendance record with the check-out time and clock-out status.
+    // Notice that we are now updating a separate field: clockOutStatus.
     const updated = await prisma.attendance.update({
       where: { id: attendance.id },
-      data: { checkOut: now.toDate() }
+      data: {
+        checkOut: now.toDate(),
+        clockOutStatus, // Set clock-out status without affecting the check-in status field.
+      },
     });
 
     res.json({
       message: "Clocked out successfully",
       checkOutTime: now.format("HH:mm"),
-      attendance: updated
+      clockOutStatus,
+      attendance: updated,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error clocking out", error });
+    console.error("Error:", error);
+    res.status(500).json({ message: "Error clocking out", error: error.message });
   }
 });
 
-// Automatic Absent Marking Cron Job (runs daily at 9:31 AM Ethiopia time)
-cron.schedule('31 9 * * *', async () => {
-  const now = getEthiopiaTime();
-  const todayStart = now.clone().startOf('day');
-  
-  try {
-    const users = await prisma.user.findMany();
-    
-    // Check attendance for each user
-    for (const user of users) {
-      const existing = await prisma.attendance.findFirst({
-        where: {
-          userId: user.id,
-          checkIn: {
-            gte: todayStart.toDate()
-          }
-        }
-      });
-
-      if (!existing) {
-        await prisma.attendance.create({
-          data: {
-            userId: user.id,
-            checkIn: todayStart.add(ABSENT_CUTOFF).toDate(),
-            status: "absent"
-          }
-        });
-      }
-    }
-    console.log("Auto-absent marking completed");
-  } catch (error) {
-    console.error("Error in auto-absent marking:", error);
-  }
-}, {
-  timezone: ETHIOPIA_TIMEZONE
-});
 
 router.get("/history", authenticate, async (req, res) => {
   const { userId } = req.user;
@@ -157,10 +204,10 @@ router.get("/history", authenticate, async (req, res) => {
     });
 
     const formatted = records.map(record => ({
-      date: moment(record.checkIn).tz(ETHIOPIA_TIMEZONE).format("YYYY-MM-DD"),
-      checkIn: moment(record.checkIn).tz(ETHIOPIA_TIMEZONE).format("HH:mm"),
+      date: moment(record.checkIn).format("YYYY-MM-DD"),
+      checkIn: moment(record.checkIn).format("HH:mm"),
       checkOut: record.checkOut ? 
-        moment(record.checkOut).tz(ETHIOPIA_TIMEZONE).format("HH:mm") : null,
+        moment(record.checkOut).format("HH:mm") : null,
       status: record.status
     }));
 

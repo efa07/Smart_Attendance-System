@@ -6,6 +6,7 @@ import { Bell, Calendar, Clock, FileText, ChartColumn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {  toast } from 'react-toastify';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function EmployeeDashboard() {
   const [status, setStatus] = useState('');
@@ -160,6 +161,8 @@ export default function EmployeeDashboard() {
                 {loading ? 'Checking Out...' : 'Clock Out'}
               </Button>
             )}
+     <Link href="/dashboard/EP"><Button variant="outline">Fill</Button></Link>
+
           </CardContent>
         </Card>
         {/* Leave Management */}

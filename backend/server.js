@@ -1,4 +1,3 @@
-process.env.TZ = 'Africa/Addis_Ababa'; // Set timezone to Ethiopia
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -12,6 +11,7 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const multer = require('multer'); // For handling file uploads
 const path = require('path');
 const shiftRoute = require("./routes/shiftRoute")
+require("./tasks/attendanceCron")
 
 const app = express();
 const prisma = new PrismaClient();
@@ -50,18 +50,27 @@ if (!fs.existsSync(dir)) {
 app.get("/", async(req,res) =>{
   res.send("it working")
 })
+
+
 app.post('/api/signup', async (req, res) => {
-  const {  email,password,fullName,role,department } = req.body;
+  const { email, password, fullName, role, department, fingerprintId, rfidId } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // since i am using stimulation i don't need to hash them now, wiz bcrypt
+    // const hashedfingerPrint = await bcrypt.hash(fingerprintId, 10);
+    // const hashedrfid = await bcrypt.hash(rfidId, 10)
+
     const user = await prisma.user.create({
       data: {
         fullName,
-  email,
-  password: hashedPassword,
-  role,
-  department,
+        email,
+        password: hashedPassword,
+        role,
+        department,
+        fingerprintId, 
+        rfidId,
       },
     });
 
@@ -71,9 +80,9 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('Email from request:', email);
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
@@ -87,7 +96,14 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     console.log(user.profilePic)
-    const token = jwt.sign({ userId: user.id ,username: user.fullName, role: user.role, department:user.department, profilePic:user.profilePic}, JWT_SECRET, { expiresIn: '12h' });
+    const token = jwt.sign({ userId: user.id ,
+      username: user.fullName,
+       role: user.role, 
+       department:user.department, 
+       profilePic:user.profilePic,
+       fingerprintId:user.fingerprintId,
+       rfidId:user.rfidId,}, 
+       JWT_SECRET, { expiresIn: '12h' });
 
     res.status(200).json({ message: 'Login successful', token, user });
   } catch (error) {

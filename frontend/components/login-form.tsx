@@ -54,17 +54,18 @@ export function LoginForm({
 
       // Decode the token with proper typing
       const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
-      const { username, role, department, userId, profilePic } = decoded;
+      const { username, role, department, userId, profilePic,fingerprintId ,rfidId} = decoded;
 
-      // Store user details in localStorage
+      // use session later
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
       localStorage.setItem("department", department);
-      localStorage.setItem("userId", String(userId));  // Convert to string
+      localStorage.setItem("userId", String(userId));
       localStorage.setItem("profilePic", profilePic || ""); 
+      localStorage.setItem("fingerprintId", fingerprintId);
+      localStorage.setItem("rfidId", rfidId);
 
-      // Redirect to dashboard
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);

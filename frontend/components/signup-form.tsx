@@ -10,10 +10,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { Fingerprint, Radio } from "lucide-react"; 
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export function SignUpForm({ className, ...props }: React.ComponentProps<"form">) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,11 +24,25 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
   const [role, setRole] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<string | null>(null);
   const [department, setDepartment] = useState<string>("");
+  const [fingerprintId, setFingerprintId] = useState<string>("");
+  const [rfidId, setRfidId] = useState<string>("");
   const router = useRouter();
   
   useEffect(() => {
     setIsAdmin(localStorage.getItem("role"));
   }, []);
+
+  // Simulate generating a fingerprint ID
+  const handleRegisterFingerprint = () => {
+    const sampleFingerprint = `FP-${Math.random().toString(36).substring(2, 10)}`;
+    setFingerprintId(sampleFingerprint);
+  };
+
+  // Simulate generating an RFID ID
+  const handleRegisterRfid = () => {
+    const sampleRfid = `RFID-${Math.random().toString(36).substring(2, 10)}`;
+    setRfidId(sampleRfid);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,9 +65,11 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         password,
         role,
         department,
+        fingerprintId,
+        rfidId,
       });
       alert(response.data.message);
-      router.push("/login")
+      router.push("/login");
     } catch (error) {
       console.error("Signup error:", error);
       alert("An error occurred during signup");
@@ -62,7 +81,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
   }
   
   return (
-    
     <form className={cn("flex flex-col gap-5", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Create your account</h1>
@@ -140,6 +158,38 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
           </Select>
         </div>
 
+        {/* Fingerprint Registration Section */}
+        <div className="grid gap-3">
+          <Label>Fingerprint</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              value={fingerprintId}
+              readOnly
+              placeholder="Not registered"
+              className="flex-1"
+            />
+            <Button type="button" onClick={handleRegisterFingerprint}>
+              <Fingerprint className="mr-2" size={16} /> Register Fingerprint
+            </Button>
+          </div>
+        </div>
+
+        {/* RFID Registration Section */}
+        <div className="grid gap-3">
+          <Label>RFID</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              value={rfidId}
+              readOnly
+              placeholder="Not registered"
+              className="flex-1"
+            />
+            <Button type="button" onClick={handleRegisterRfid}>
+              <Radio className="mr-2" size={16} /> Register RFID
+            </Button>
+          </div>
+        </div>
+
         <Button type="submit" className="w-full">
           Create account
         </Button>
@@ -152,6 +202,5 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         </a>
       </div>
     </form>
- 
   );
 }
