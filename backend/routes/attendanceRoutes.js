@@ -13,7 +13,8 @@ const router = express.Router();
 router.post("/clock-in", authenticate, async (req, res) => {
   const { userId } = req.user;
   const { key, method } = req.body;
-  const toleranceTime = 20; //minutes
+  let toleranceTime = 20; //minutes
+
 
   //validate req.body
   const validationError = validateClockInRequest(req.body);
@@ -35,16 +36,14 @@ router.post("/clock-in", authenticate, async (req, res) => {
   const afternoonLateEnd = afternoonStart.clone().add(1, "hour");
   const afternoonShiftEnd = now.clone().set({ hour: 17, minute: 0, second: 0, millisecond: 0 });
 
-  // Determine which shift we are in based on the current time
+  // determine which shift
   let shift = null;
   if (now.isBetween(morningStart.clone().subtract(1, "hour"), morningShiftEnd, null, "[)")) {
-    // clock-in up until noon belongs to the morning shift.
     shift = "morning";
   } else if (now.isBetween(afternoonStart.clone().subtract(1, "hour"), afternoonShiftEnd, null, "[)")) {
-    // Similarly, clock-in up until 5pm is considered the afternoon shift.
     shift = "afternoon";
   } else {
-    return res.status(400).json({ message: "Clock-in time is outside valid shift hours" });
+    return res.status(400).json({ message: "Clock-in time is outside shift hours" });
   }
 
   // Define search boundaries for an existing record for the shift.
@@ -82,7 +81,6 @@ router.post("/clock-in", authenticate, async (req, res) => {
       } else if (now.isBetween(morningToleranceEnd, morningLateEnd, null, "[)")) {
         status = "late";
       } else {
-        // clock-in after 9:30am but before 12:00am isabsent
         status = "very_late";
       }
     } else if (shift === "afternoon") {
@@ -93,18 +91,18 @@ router.post("/clock-in", authenticate, async (req, res) => {
       } else if (now.isBetween(afternoonToleranceEnd, afternoonLateEnd, null, "[)")) {
         status = "late";
       } else {
-        // lock-in after 2:00 but before 5:00 is absent
         status = "very_late";
       }
     }
 
-    // Create the attendanc
+    // Create attendanc
     const attendance = await prisma.attendance.create({
       data: {
         userId,
         checkIn: now.toDate(),
         status,
         [key === AttendanceMethod.FingerPrint ? "fingerprintId" : "rfidId"]: method,
+        shift,
       },
     });
 

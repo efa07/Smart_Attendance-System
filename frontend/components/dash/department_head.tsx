@@ -27,7 +27,6 @@ export default function DepartmentHeadDashboard() {
           <Link href="/dashboard/department/leave"><Button variant="outline">Approve</Button></Link>
         </CardContent>
       </Card>
-     
     </div>
   );
 }

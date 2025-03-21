@@ -45,6 +45,7 @@ model Attendance {
   fingerprintId  String?  
   rfidId         String? 
   createdAt      DateTime @default(now())
+  shift          String?
 }
 
 model FaceEncoding {

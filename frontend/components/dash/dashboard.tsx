@@ -8,19 +8,22 @@ import { useRouter } from "next/navigation";
 import MoonLoader from "react-spinners/ClipLoader";
 
 
-export default function Dashboard({ username }: { username: string | null }) {
+export default function Dashboard() {
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
-    const userId = localStorage.getItem("userId");
-
+    const storedUsername = localStorage.getItem("username");
+    if (!storedUsername) {
+      router.push("/login");
+    }
+    setUsername(storedUsername);
+    
     if (!storedRole) {
       router.push("/login");
     } else {
-      setUserId(userId);
       setRole(storedRole);
     }
   }, []);
@@ -37,11 +40,10 @@ export default function Dashboard({ username }: { username: string | null }) {
     <div className="flex flex-1">
       <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full overflow-y-auto ">
         <h1 className="text-2xl font-light text-center">Welcom back <span className="text-rose-500 font-light"> {username?.split(" ")[1]}! </span></h1>
-      
         {role === "super_admin" && <SuperAdminDashboard />}
         {role === "department_head" && <DepartmentHeadDashboard />}
         {role === "hr_admin" && <HRManagerDashboard />}
-        {role === "employee" && <EmployeeDashboard userId={userId}/> }
+        {role === "employee" && <EmployeeDashboard /> }
       </div>
     </div>
   );

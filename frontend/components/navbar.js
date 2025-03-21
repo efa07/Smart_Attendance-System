@@ -40,11 +40,11 @@ export default function Navbar() {
           <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
         </div>
         {/* Get Started Button */}
-        <a href="/login">
+        <Link href="/dashboard/EP">
           <button className="bg-black text-white px-4 py-2 rounded-full">
-            Get Started
+            Clock in
           </button>
-        </a>
+        </Link>
       </div>
     </nav>
   );

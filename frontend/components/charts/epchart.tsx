@@ -1,9 +1,6 @@
 "use client"
-
 import { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Bar, BarChart, XAxis, YAxis } from "recharts";
-
 import {
   Card,
   CardContent,
@@ -18,6 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const AttendanceTrend = () => {
   const [chartData, setChartData] = useState([]);
@@ -57,7 +55,7 @@ const AttendanceTrend = () => {
         const data = await response.json();
 
         // Process time data
-        const processedData = data.map((entry) => ({
+        const processedData = data.map((entry: { checkIn: any; date: string; }) => ({
           ...entry,
           checkIn: convertTimeToHours(entry.checkIn),
           date: entry.date.split("-")[2], // Extract day from date
@@ -74,14 +72,14 @@ const AttendanceTrend = () => {
   }, [token]);
 
   // Helper function to convert time string to hours (float)
-  const convertTimeToHours = (timeStr) => {
+  const convertTimeToHours = (timeStr: { split: (arg0: string) => { (): any; new(): any; map: { (arg0: NumberConstructor): [any, any]; new(): any; }; }; }) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours + minutes / 60;
   };
 
   return (
-<div className="flex  flex-row h-full w-full items-center justify-center">
-  <Card className="w-6/12">
+<div className="flex  flex-row  w-full items-center justify-center">
+  <Card className="w-full md:w-3/4 lg:w-1/2 hover:shadow-lg transition-shadow">
         <CardHeader>
           <CardTitle>Attendance Chart</CardTitle>
           <CardDescription>Check-ins over the past 30 days</CardDescription>

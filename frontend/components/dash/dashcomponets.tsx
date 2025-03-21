@@ -4,6 +4,7 @@ import { Sidebar, SidebarBody, SidebarLink } from "../../components/ui/sidebar";
 import {
   IconArrowLeft,
   IconBrandTabler,
+  IconMenu2,
   IconSettings,
   IconUserBolt,
 } from "@tabler/icons-react";
@@ -11,7 +12,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function SidebarDemo() {
   const [username, setUsername] = useState<string | null>("");
   const [profilePic, setProfilePic] = useState<string | null>(null);
@@ -66,6 +69,15 @@ export default function SidebarDemo() {
         "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800  border border-neutral-200 dark:border-neutral-700 overflow-hidden h-[calc(100vh-3rem)]",
       )}
     >
+
+        {/* Sidebar Toggle Button */}
+        <button
+        onClick={() => setOpen(!open)}
+        className="p-2 absolute top-4 left-4 md:hidden bg-gray-200 dark:bg-gray-700 rounded-md"
+      >
+        <IconMenu2 className="text-gray-600 dark:text-gray-300" />
+      </button>
+      
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
