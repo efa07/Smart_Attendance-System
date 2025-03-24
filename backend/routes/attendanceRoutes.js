@@ -117,14 +117,13 @@ router.post("/clock-in", authenticate, async (req, res) => {
     res.status(500).json({ message: "Error clocking in", error: error.message });
   }
 });
-
 router.post("/clock-out", authenticate, async (req, res) => {
   const { userId } = req.user;
   const now = getLocalTime();
 
   try {
     // Find today's attendance record that hasn't been checked out
-    const todayStart = now.clone().startOf('day');
+    const todayStart = now.clone().startOf("day");
     const attendance = await prisma.attendance.findFirst({
       where: {
         userId,
@@ -139,7 +138,7 @@ router.post("/clock-out", authenticate, async (req, res) => {
 
     // Determine the shift based on the check-in time.
     // For simplicity, if the check-in was before 12:00 PM, consider it a morning shift; otherwise, afternoon.
-    const checkInTime = moment(attendance.checkIn); // Ensure moment is imported if you're using it
+    const checkInTime = moment(attendance.checkIn);
     let shift = "";
     if (checkInTime.hour() < 12) {
       shift = "morning";
@@ -169,13 +168,17 @@ router.post("/clock-out", authenticate, async (req, res) => {
       clockOutStatus = "overtime";
     }
 
-    // Update the attendance record with the check-out time and clock-out status.
-    // Notice that we are now updating a separate field: clockOutStatus.
+    // Calculate overtime in minutes if clockOutStatus is overtime, otherwise overtime is 0.
+    const overtimeWorked =
+      clockOutStatus === "overtime" ? now.diff(toleranceWindowEnd, "minutes") : 0;
+
+    // Update the attendance record with the check-out time, clock-out status, and overtime.
     const updated = await prisma.attendance.update({
       where: { id: attendance.id },
       data: {
         checkOut: now.toDate(),
         clockOutStatus, // Set clock-out status without affecting the check-in status field.
+        overtime: overtimeWorked,
       },
     });
 
@@ -183,6 +186,7 @@ router.post("/clock-out", authenticate, async (req, res) => {
       message: "Clocked out successfully",
       checkOutTime: now.format("HH:mm"),
       clockOutStatus,
+      overtime: overtimeWorked,
       attendance: updated,
     });
   } catch (error) {
@@ -190,7 +194,6 @@ router.post("/clock-out", authenticate, async (req, res) => {
     res.status(500).json({ message: "Error clocking out", error: error.message });
   }
 });
-
 
 router.get("/history", authenticate, async (req, res) => {
   const { userId } = req.user;
@@ -346,33 +349,61 @@ router.get('/attendance-summary', async (req, res) => {
 });
 
 
-// Fetch pending attendance records
-router.get("/pending", async (req, res) => {
+// Fetch pending attendance records 
+router.get("/pending", authenticate, async (req, res) => {
+  const { userId } = req.user;
+  let department = null;
+
+  try {
+    // Get the logged in user's department
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    department = user.department;
+  } catch (error) {
+    console.error("Error fetching user department:", error);
+    return res.status(500).json({ error: "Failed to fetch user department" });
+  }
+
   try {
     const { search } = req.query;
-    const records = await prisma.attendance.findMany({
+
+    // Search filter: if search is provided, filter by fullName or email, otherwise fetch all users from that department
+    const records = await prisma.user.findMany({
       where: {
-        approvedByHR: false,
-        user: {
+        department,  // only get same department
+        ...(search && {
           OR: [
             { fullName: { contains: search, mode: "insensitive" } },
             { email: { contains: search, mode: "insensitive" } },
           ],
-        },
+        }),
       },
       include: {
-        user: true,
+        attendance: {
+          where: { status: "absent"},
+          orderBy: { createdAt: "desc" },
+        }
+        
       },
     });
-    res.json({ records: records.map((r) => ({
+
+    // Map over the users and then their attendance records
+    const result = records.flatMap((r) =>
+      r.attendance.map((att) => ({
+        attendanceId: att.id,
         id: r.id,
-        employeeName: r.user.fullName,
-        date: r.createdAt.toISOString().split("T")[0],
-        clockIn: r.checkIn,
-        clockOut: r.checkOut,
-        status: r.status,
+        employeeName: r.fullName,
+        date: att.createdAt.toISOString().split("T")[0],
+        status: att.status,
       }))
-    });
+    );
+
+    res.json({ records: result });
   } catch (error) {
     console.error("Error fetching attendance records:", error);
     res.status(500).json({ error: "Failed to fetch records" });
@@ -383,10 +414,27 @@ router.get("/pending", async (req, res) => {
 router.put("/approve/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await prisma.attendance.update({
-      where: { id: Number(id) },
-      data: { status: "Approved", approvedByHR: true },
+    const attendanceId = parseInt(id);
+
+    if (isNaN(attendanceId)) {
+      return res.status(400).json({ error: "Invalid attendance ID" });
+    }
+
+    // Check if record exists
+    const attendanceRecord = await prisma.attendance.findUnique({
+      where: { id: attendanceId },
     });
+
+    if (!attendanceRecord) {
+      return res.status(404).json({ error: "Attendance record not found" });
+    }
+
+    // Update the record
+    await prisma.attendance.update({
+      where: { id: attendanceId },
+      data: { status: "Approved" },
+    });
+
     res.json({ message: "Attendance approved successfully" });
   } catch (error) {
     console.error("Error approving attendance record:", error);
@@ -394,13 +442,14 @@ router.put("/approve/:id", async (req, res) => {
   }
 });
 
+
 // Reject attendance record
 router.put("/reject/:id", async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.attendance.update({
       where: { id: Number(id) },
-      data: { status: "Rejected", approvedByHR: false },
+      data: { status: "Rejected" },
     });
     res.json({ message: "Attendance rejected successfully" });
   } catch (error) {

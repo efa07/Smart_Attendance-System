@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Fingerprint, Radio } from "lucide-react"; 
+import { Fingerprint, Radio } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -27,7 +27,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
   const [fingerprintId, setFingerprintId] = useState<string>("");
   const [rfidId, setRfidId] = useState<string>("");
   const router = useRouter();
-  
+
   useEffect(() => {
     setIsAdmin(localStorage.getItem("role"));
   }, []);
@@ -38,7 +38,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
     setFingerprintId(sampleFingerprint);
   };
 
-  // Simulate generating an RFID ID
+  // for RFID too
   const handleRegisterRfid = () => {
     const sampleRfid = `RFID-${Math.random().toString(36).substring(2, 10)}`;
     setRfidId(sampleRfid);
@@ -69,17 +69,15 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         rfidId,
       });
       alert(response.data.message);
-      router.push("/login");
+      // router.push("/login");
     } catch (error) {
       console.error("Signup error:", error);
       alert("An error occurred during signup");
     }
   };
-
   if (isAdmin !== "hr_admin") {
     return <h1>Access Denied</h1>;
   }
-  
   return (
     <form className={cn("flex flex-col gap-5", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -88,7 +86,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
           Enter your info below to Sign up.
         </p>
       </div>
-
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="fullName">Full Name</Label>
@@ -102,7 +99,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -115,7 +111,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-
         <div className="grid gap-3">
           <Label htmlFor="password">Password</Label>
           <Input
@@ -127,7 +122,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
         <div className="grid gap-3">
           <Label htmlFor="role">Role</Label>
           <Select onValueChange={(value) => setRole(value)}>
@@ -142,7 +136,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
             </SelectContent>
           </Select>
         </div>
-
         <div className="grid gap-3">
           <Label htmlFor="department">Department</Label>
           <Select onValueChange={(value) => setDepartment(value)}>
@@ -157,7 +150,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
             </SelectContent>
           </Select>
         </div>
-
         {/* Fingerprint Registration Section */}
         <div className="grid gap-3">
           <Label>Fingerprint</Label>

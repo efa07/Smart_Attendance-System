@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bell, Calendar, Clock, FileText, ChartColumn } from 'lucide-react';
+import { Bell, Calendar, Clock, FileText, ChartColumn ,Timer} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
@@ -28,7 +28,8 @@ export default function EmployeeDashboard() {
 
       if (!res.ok) throw new Error('Failed to fetch attendance history');
       const data = await res.json();
-      const latestRecord = data.length > 0 ? data[data.length - 1] : null;
+      console.log(data)
+      const latestRecord = data.length > 0 ? data[0] : null;
       if (latestRecord) {
         setStatus(latestRecord.checkOut ? 'Not Checked In' : latestRecord.status);
       } else {
@@ -42,7 +43,7 @@ export default function EmployeeDashboard() {
 
   useEffect(() => {
     fetchAttendanceStatus();
-  }, []);
+  }, [loading]);
 
   const handleClockOut = async () => {
     setLoading(true);
@@ -77,21 +78,6 @@ export default function EmployeeDashboard() {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Employee Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Attendance Overview */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="flex flex-col justify-between h-full">
-            <div className="flex items-center mb-4">
-              <ChartColumn className="text-primary" size={24} />
-              <h2 className="text-xl font-semibold ml-2">Attendance Overview</h2>
-            </div>
-            <p className="text-gray-600 flex-1">
-              View your daily, weekly, and monthly attendance stats.
-            </p>
-            <Link href="/dashboard/chart">
-              <Button className="mt-4 w-full">View Chart</Button>
-            </Link>
-          </CardContent>
-        </Card>
 
         {/* Clock-Out */}
         <Card className="hover:shadow-lg transition-shadow">
@@ -117,6 +103,23 @@ export default function EmployeeDashboard() {
                 {loading ? 'Checking Out...' : 'Clock Out'}
               </Button>
             )}
+          </CardContent>
+        </Card>
+
+
+        {/* Attendance Overview */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="flex flex-col justify-between h-full">
+            <div className="flex items-center mb-4">
+              <ChartColumn className="text-primary" size={24} />
+              <h2 className="text-xl font-semibold ml-2">Attendance Overview</h2>
+            </div>
+            <p className="text-gray-600 flex-1">
+              View your daily, weekly, and monthly attendance stats.
+            </p>
+            <Link href="/dashboard/chart">
+              <Button className="mt-4 w-full">View Chart</Button>
+            </Link>
           </CardContent>
         </Card>
 
@@ -170,7 +173,7 @@ export default function EmployeeDashboard() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardContent className="flex flex-col items-center">
             <div className="flex items-center mb-4">
-            <FileText className="text-primary mb-2" size={24} />
+            <Timer className="text-primary mb-2" size={24} />
             <h2 className="text-xl font-semibold mb-2">Manage Shift</h2>
             </div>
             <p className="text-gray-600 flex-1 mb-4">

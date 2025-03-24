@@ -7,12 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ShiftType {
-  Morning
-  Afternoon
-  Evening
-}
-
 model User {
   id             Int           @id @default(autoincrement())
   fullName       String
@@ -60,7 +54,7 @@ model Shift {
   id         Int        @id @default(autoincrement())
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade) 
   userId     Int  
-  shiftType  ShiftType
+  shiftType  String?
   shiftStart DateTime
   shiftEnd   DateTime
 }
@@ -73,6 +67,7 @@ model Leave {
   startDate DateTime
   endDate   DateTime
   status    String
+  department String
   createdAt DateTime @default(now())
 }
 

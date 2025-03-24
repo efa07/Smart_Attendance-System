@@ -8,7 +8,19 @@ const router = express.Router();
 router.post("/apply", authenticate, async (req, res) => {
   const { leaveType, startDate, endDate } = req.body;
   const { userId } = req.user;
+  var department = "";
 
+  try{
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    department = user.department;
+  }catch(error){
+    return res.status(500).json({ message: "Error fetching user", error });
+  }
   try {
     const newLeave = await prisma.leave.create({
       data: {
@@ -16,6 +28,7 @@ router.post("/apply", authenticate, async (req, res) => {
         leaveType,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
+        department,
         status: "pending",
       },
     });
@@ -39,9 +52,25 @@ router.get("/history", authenticate, async (req, res) => {
 });
 
 // Get all leave requests
-router.get("/", async (req, res) => {
+router.get("/", authenticate,async (req, res) => {
+  const { userId } = req.user;
+  var department = "";
+
+  try{
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    department = user.department;
+  }catch(error){
+    return res.status(500).json({ message: "Error fetching user", error });
+  }
+
   try {
     const leaveRequests = await prisma.leave.findMany({
+      where: { department },
       include: {
         user: { select: { fullName: true, email: true } }, // Fetch user details
       },
@@ -56,14 +85,14 @@ router.get("/", async (req, res) => {
 // Approve or Disapprove leave request (only HR can access this)
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body; // 'approved' or 'disapproved'
+  const { status } = req.body; // approved or disapproved
 
   if (!["approved", "disapproved"].includes(status)) {
     return res.status(400).json({ error: "Invalid status value" });
   }
 
   try {
-    // Update leave status
+    // update leave status
     const updatedLeave = await prisma.leave.update({
       where: { id: Number(id) },
       data: { status },

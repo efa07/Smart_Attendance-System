@@ -86,7 +86,7 @@ export default function AboutPage() {
             Enhance workplace efficiency with smart, contactless attendance management
           </p>
           <Link 
-            href="https://github.com/your-repo" 
+            href="https://github.com/efa07/Smart_Attendance-System" 
             className="text-gray-300 hover:text-white transition-colors"
           >
             View Project Source

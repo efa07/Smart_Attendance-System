@@ -19,9 +19,8 @@ interface AttendanceRecord {
   id: number;
   employeeName: string;
   date: string;
-  clockIn: string;
-  clockOut: string;
   status: string;
+  attendanceId: number;
 }
 
 const AttendanceApproval = () => {
@@ -61,7 +60,7 @@ const AttendanceApproval = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${API_URL}/api/attendance/approve/${record.id}`,
+        `${API_URL}/api/attendance/approve/${record.attendanceId}`,
         {
           method: "PUT",
           headers: {
@@ -72,7 +71,7 @@ const AttendanceApproval = () => {
       );
       if (!res.ok) throw new Error("Failed to approve record");
       toast.success("Attendance approved successfully!");
-      setRecords((prev) => prev.filter((r) => r.id !== record.id));
+      setRecords((prev) => prev.filter((r) => r.id !== record.attendanceId));
     } catch (error) {
       console.error("Error approving attendance record:", error);
       toast.error("Failed to approve attendance record!");
@@ -83,7 +82,7 @@ const AttendanceApproval = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${API_URL}/api/attendance/reject/${record.id}`,
+        `${API_URL}/api/attendance/reject/${record.attendanceId}`,
         {
           method: "PUT",
           headers: {
@@ -94,13 +93,12 @@ const AttendanceApproval = () => {
       );
       if (!res.ok) throw new Error("Failed to reject record");
       toast.success("Attendance rejected successfully!");
-      setRecords((prev) => prev.filter((r) => r.id !== record.id));
+      setRecords((prev) => prev.filter((r) => r.id !== record.attendanceId));
     } catch (error) {
       console.error("Error rejecting attendance record:", error);
       toast.error("Failed to reject attendance record!");
     }
   };
-
   const handleReset = () => {
     setSearchQuery("");
     fetchAttendanceRecords();
@@ -133,10 +131,10 @@ const AttendanceApproval = () => {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-gray-300 ">
+                <TableHead className="text-left font-bold text-black">ID</TableHead>
                 <TableHead className="text-left font-bold text-black">Employee</TableHead>
+                <TableHead className="text-left font-bold text-black">Status</TableHead>
                 <TableHead className="text-left font-bold text-black">Date</TableHead>
-                <TableHead className="text-left font-bold text-black">Clock In</TableHead>
-                <TableHead className="text-left font-bold text-black">Clock Out</TableHead>
                 <TableHead className="text-left font-bold text-black">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -153,10 +151,11 @@ const AttendanceApproval = () => {
                     key={record.id}
                     className="border-b border-gray-300 hover:bg-gray-50"
                   >
+                    <TableCell>{record.attendanceId}</TableCell>
                     <TableCell>{record.employeeName}</TableCell>
+                    <TableCell>{record.status}</TableCell>
                     <TableCell>{record.date}</TableCell>
-                    <TableCell>{record.clockIn}</TableCell>
-                    <TableCell>{record.clockOut}</TableCell>
+                
                     <TableCell className="flex gap-2">
                       <Button
                         onClick={() => handleApprove(record)}

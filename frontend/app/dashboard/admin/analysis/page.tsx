@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Card } from "@/components/ui/card";

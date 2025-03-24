@@ -14,7 +14,9 @@ interface DecodedToken {
   role: string;
   department: string;
   userId: string;
-  profilePic?: string; // Optional 
+  profilePic?: string;  
+  fingerprintId?: string;
+  rfidId?: string;
 }
 
 // Define expected structure of API response
@@ -54,6 +56,7 @@ export function LoginForm({
 
       // Decode the token with proper typing
       const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+
       const { username, role, department, userId, profilePic,fingerprintId ,rfidId} = decoded;
 
       // use session later
@@ -63,8 +66,8 @@ export function LoginForm({
       localStorage.setItem("department", department);
       localStorage.setItem("userId", String(userId));
       localStorage.setItem("profilePic", profilePic || ""); 
-      localStorage.setItem("fingerprintId", fingerprintId);
-      localStorage.setItem("rfidId", rfidId);
+      localStorage.setItem("fingerprintId", fingerprintId || "");
+      localStorage.setItem("rfidId", rfidId || "");
 
       router.push("/dashboard");
     } catch (error) {

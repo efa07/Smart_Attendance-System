@@ -23,11 +23,17 @@ interface LeaveRequest {
 
 const LeaveRequests: React.FC = () => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
-
   useEffect(() => {
+        const token = localStorage.getItem('token');
     const fetchLeaveRequests = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/leaves`);
+        const response = await fetch(`${API_URL}/api/leaves`,
+          {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }});
         const data = await response.json();
         setLeaveRequests(data);
       } catch (error) {
