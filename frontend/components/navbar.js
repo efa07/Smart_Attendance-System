@@ -1,10 +1,15 @@
-
+"use client"
 import Link from "next/link";
 import { Bell } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export default function Navbar() {
+ const path = usePathname();
+
+
   return (
-    <nav className="font-[Rajdhani] flex items-center justify-between px-6 py-3 bg-white shadow-sm">
+    
+    <nav className={path === "/" ? "font-[Rajdhani] flex items-center justify-between px-6 py-3 bg-white shadow-sm" : "hidden"}>
       {/* Logo */}
       <div className="flex items-center">
         <Link href="/" className="flex items-center text-black font-bold text-2xl">
@@ -40,11 +45,7 @@ export default function Navbar() {
           <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
         </div>
         {/* Get Started Button */}
-        <Link href="/dashboard/EP">
-          <button className="bg-black text-white px-4 py-2 rounded-full">
-            Clock in
-          </button>
-        </Link>
+       
       </div>
     </nav>
   );

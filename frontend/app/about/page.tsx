@@ -87,7 +87,7 @@ export default function AboutPage() {
           </p>
           <Link 
             href="https://github.com/efa07/Smart_Attendance-System" 
-            className="text-gray-300 hover:text-white transition-colors"
+            className="text-gray-500 hover:text-white transition-colors"
           >
             View Project Source
           </Link>

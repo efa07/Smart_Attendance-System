@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import ClipLoader from "react-spinners/ClipLoader";
-// Define TypeScript types
 interface Payroll {
   userId: number;
   fullName: string;
@@ -19,8 +18,14 @@ export default function PayrollTable() {
 
   useEffect(() => {
     async function fetchPayroll() {
+      const token = localStorage.getItem("token")
       try {
-        const res = await fetch(`${API_URL}/api/pay/payroll`);
+        const res = await fetch(`${API_URL}/api/pay/dep/payroll`,{
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) throw new Error("Failed to fetch payroll data");
         const data = await res.json();
         setPayrolls(data.payrolls || []);

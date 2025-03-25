@@ -2,6 +2,8 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
+const authenticate = require("../middleware/authMiddleware");
+
 
 // constants for salary calculation
 const BASE_SALARY = 3000; 
@@ -62,8 +64,7 @@ async function calculatePayroll(user) {
     finalSalary: salary,
   };
 }
-
-//generate payroll for all users
+// for all users
 router.get('/payroll', async (req, res) => {
   try {
     const users = await prisma.user.findMany();
@@ -77,5 +78,28 @@ router.get('/payroll', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+//only for department head
+router.get('/dep/payroll', authenticate, async (req, res) => {
+  const { userId, department } = req.user;
+
+  try {
+    const users = await prisma.user.findMany();
+
+    // Calculate payroll only for users in the same department
+    const payrolls = await Promise.all(
+      users
+        .filter(user => user.department === department) 
+        .map(user => calculatePayroll(user)) 
+    );
+
+    res.json({ payrolls });
+  } catch (error) {
+    console.error('Error generating payroll:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 
 module.exports = router;
