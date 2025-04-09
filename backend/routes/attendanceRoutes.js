@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/clock-in", authenticate, async (req, res) => {
   const { userId } = req.user;
   const { key, method } = req.body;
-  let toleranceTime = 20; //minutes
+  let toleranceTime = 20; //mintus
 
 
   //validate req.body
@@ -269,7 +269,7 @@ router.get('/attendance-summary', async (req, res) => {
 
   const now = new Date();
   let startDate;
-  let groupBy = 'day'; // Default
+  let groupBy = 'day'; //defalt
 
   if (filter === 'weekly') {
     const day = now.getDay() === 0 ? 7 : now.getDay(); // Treat Sunday as 7
@@ -322,9 +322,9 @@ router.get('/attendance-summary', async (req, res) => {
         summary[dateLabel] = { present: 0, absent: 0, overtime: 0 };
       }
 
-      if (record.status.toLowerCase() === 'present') {
+      if (["early", "on_time", "late", "very_late"].includes(record.status.toLowerCase())) {
         summary[dateLabel].present++;
-      } else if (record.status.toLowerCase() === 'absent') {
+      } else {
         summary[dateLabel].absent++;
       }
       summary[dateLabel].overtime += Number(record.overtime) || 0;

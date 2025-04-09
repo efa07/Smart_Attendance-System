@@ -32,7 +32,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
     setIsAdmin(localStorage.getItem("role"));
   }, []);
 
-  // Simulate generating a fingerprint ID
+  // stimulet generating a fingerprint ID
   const handleRegisterFingerprint = () => {
     const sampleFingerprint = `FP-${Math.random().toString(36).substring(2, 10)}`;
     setFingerprintId(sampleFingerprint);
@@ -186,7 +186,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
           Create account
         </Button>
       </div>
-
       <div className="text-center text-sm">
         You have an account?{" "}
         <a href="login" className="underline underline-offset-4">

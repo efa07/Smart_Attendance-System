@@ -1,12 +1,9 @@
 "use client"
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
-
+import { usePathname } from "next/navigation";
 export default function Navbar() {
  const path = usePathname();
-
-
   return (
     
     <nav className={path === "/" ? "font-[Rajdhani] flex items-center justify-between px-6 py-3 bg-white shadow-sm" : "hidden"}>
@@ -14,7 +11,7 @@ export default function Navbar() {
       <div className="flex items-center">
         <Link href="/" className="flex items-center text-black font-bold text-2xl">
           <img
-            src="/logo.png"
+            src="/logo.jpeg"
             alt="Logo"
             className="h-8 w-8 mr-2 border border-gray-200 rounded-full"
           />

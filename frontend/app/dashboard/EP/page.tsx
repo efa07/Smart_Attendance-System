@@ -80,7 +80,7 @@ export default function BiometricAttendance() {
             {loading ? (
               <Loader2 className="animate-spin w-12 h-12 text-blue-500 mb-2" />
             ) : (
-              <Fingerprint className="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform duration-300 mb-2" />
+              <Fingerprint className="w-22 h-22 text-blue-500 group-hover:scale-110 transition-transform duration-300 mb-2" />
             )}
             <span className="font-semibold text-lg text-center">Use Fingerprint</span>
           </Button>

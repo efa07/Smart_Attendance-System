@@ -18,13 +18,13 @@ model User {
   createdAt      DateTime      @default(now())
   attendance     Attendance[]
   faceEncoding   FaceEncoding? 
-  shifts         Shift[] 
   leaves         Leave[]
   isAdmin        Boolean       @default(false)
   notifications  Notification[]
   fingerprintId  String?       
   rfidId         String?  
   payroll        Payroll[]
+  userShift     UserShift[]
 }
 
 model Attendance {
@@ -52,13 +52,24 @@ model FaceEncoding {
 }
 
 model Shift {
-  id         Int        @id @default(autoincrement())
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade) 
-  userId     Int  
-  shiftType  String?
-  shiftStart DateTime
-  shiftEnd   DateTime
+  id          String  @id @default(uuid())
+  name        String  @unique // "Day Shift", "Night Shift", "Rotational Shift"
+  startTime   String 
+  endTime     String  
+  employees   UserShift[]
+  createdAt   DateTime @default(now())
 }
+
+model UserShift {
+  id        String @id @default(uuid())
+  userId    Int @unique
+  shiftId   String
+  startDate DateTime // Shift start date
+  endDate   DateTime? // If it's a temporary shift
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  shift     Shift    @relation(fields: [shiftId], references: [id], onDelete: Cascade) 
+}
+
 
 model Leave {
   id        Int    @id @default(autoincrement())

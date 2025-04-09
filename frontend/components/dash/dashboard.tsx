@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; 
 import MoonLoader from "react-spinners/ClipLoader";
 
-
 export default function Dashboard() {
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
@@ -28,7 +27,6 @@ export default function Dashboard() {
     }
   }, []);
  
-
   if (!role) return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-neutral-900 dark:to-neutral-800">
       <MoonLoader

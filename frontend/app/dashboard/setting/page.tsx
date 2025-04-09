@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Switch } from "@headlessui/react";
 import { User } from "lucide-react";
+// import ModeToggle from "../../../components/ui/themButton";
 
 export default function Settings() {
   const [darkMode, setDarkMode] = useState(false);
@@ -40,6 +41,12 @@ export default function Settings() {
           />
         </Switch>
       </div>
+
+      {/* them Selection */}
+      {/* <div className="flex items-center justify-between mb-4">
+        <span className="text-lg">Theme</span>
+        <ModeToggle />
+      </div> */}
 
       {/* Save Button */}
       <button className="w-full mt-4 py-2 px-4 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition">

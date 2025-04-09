@@ -6,14 +6,12 @@ import Link from "next/link";
 export default function DepartmentHeadDashboard() {
   return (
     <div className="p-6 md:p-10 lg:p-12 bg-zinc font-[Rajdhani] min-h-screen flex flex-col items-center">
-      
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
         {/* Attendance Approval */}
-        <Card className="shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl bg-white border border-gray-100">
+        <Card className="shadow-md hover:shadow-xl hover:border-purple-500 transition-all duration-300 transform hover:-translate-y-2 rounded-xl bg-white border border-gray-100">
           <CardContent className="p-6 flex flex-col space-y-4">
             <div className="flex items-center space-x-3">
-              <ClipboardCheck size={28} className="text-blue-500" />
+              <ClipboardCheck size={28} className="text-purple-500" />
               <h2 className="text-xl font-semibold text-gray-800">Attendance Approval</h2>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">
@@ -21,7 +19,9 @@ export default function DepartmentHeadDashboard() {
             </p>
             <div className="flex justify-end">
               <Link href="/dashboard/department/aprove">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md text-base font-medium transition-all duration-200">
+                <Button
+                variant="outline" 
+                className="text-purple-500 border-1 border-purple-500 px-5 py-2 rounded-md text-base font-medium transition-all duration-200">
                   Approve
                 </Button>
               </Link>
@@ -30,7 +30,7 @@ export default function DepartmentHeadDashboard() {
         </Card>
 
         {/* Leave Requests */}
-        <Card className="shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl bg-white border border-gray-100">
+        <Card className="shadow-md hover:shadow-xl  hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 rounded-xl bg-white border border-gray-100">
           <CardContent className="p-6 flex flex-col space-y-4">
             <div className="flex items-center space-x-3">
               <CalendarCheck size={28} className="text-green-500" />
@@ -41,7 +41,9 @@ export default function DepartmentHeadDashboard() {
             </p>
             <div className="flex justify-end">
               <Link href="/dashboard/department/leave">
-                <Button className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-base font-medium transition-all duration-200">
+                <Button 
+                variant = "outline"
+                className="text-green-500 border-1 border-green-500 px-5 py-2 rounded-md text-base font-medium transition-all duration-200">
                   Approve
                 </Button>
               </Link>
@@ -50,10 +52,10 @@ export default function DepartmentHeadDashboard() {
         </Card>
 
         {/* Salary Approval */}
-        <Card className="shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl bg-white border border-gray-100">
+        <Card className="shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 rounded-xl bg-white border border-gray-200 hover:border-amber-500">
           <CardContent className="p-6 flex flex-col space-y-4">
             <div className="flex items-center space-x-3">
-              <CircleDollarSign size={28} className="text-blue-500" />
+              <CircleDollarSign size={28} className="text-amber-500" />
               <h2 className="text-xl font-semibold text-gray-800">Salary Approval</h2>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">
@@ -61,7 +63,9 @@ export default function DepartmentHeadDashboard() {
             </p>
             <div className="flex justify-end">
               <Link href="/dashboard/department/payroll">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md text-base font-medium transition-all duration-200">
+                <Button 
+                variant = "outline"
+                className="text-orange-400 border-amber-500 px-5 py-2 rounded-md text-base font-medium transition-all duration-200">
                   Approve
                 </Button>
               </Link>

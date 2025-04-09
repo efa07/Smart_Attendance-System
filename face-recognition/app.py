@@ -13,7 +13,7 @@ DB_CONFIG = {
     'port': 5432
 }
 
-# Redis config
+# redis config
 redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
 # initialize known faces and mapping
@@ -25,7 +25,7 @@ name_to_userId = {}
 conn = psycopg2.connect(**DB_CONFIG)
 cursor = conn.cursor()
 
-# Fetch user mapping
+# get user mapping
 cursor.execute('SELECT id, "fullName" FROM "User"')
 users = cursor.fetchall()
 for user_id, fullName in users:

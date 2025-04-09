@@ -249,7 +249,7 @@ export default function EmployeeDashboard() {
                 </div>
               </div>
               <div className="flex justify-end mt-6">
-                <Link href="/dashboard/shift">
+                <Link href="/dashboard/EpShift">
                   <Button 
                     variant="outline" 
                     className="border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:border-indigo-600 transition-colors"

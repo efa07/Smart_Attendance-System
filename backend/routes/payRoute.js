@@ -132,7 +132,6 @@ router.get('/dep/payroll', authenticate, async (req, res) => {
   }
 });
 
-
 router.post("/approve", authenticate, async (req, res) => {
   const { userId, status } = req.body;
 
@@ -168,8 +167,6 @@ router.post("/approve", authenticate, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 //get approved
 router.get("/approved-payrolls", authenticate, async (req, res) => {

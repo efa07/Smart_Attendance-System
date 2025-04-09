@@ -18,9 +18,8 @@ const leaveRoute = require("./routes/leaveRoute");
 const payRoute = require("./routes/payRoute");
 const shiftRoute = require("./routes/shiftRoute");
 const attendanceRoutes = require("./routes/attendanceRoutes");
-
 require("./tasks/attendanceCron");
-
+require("./tasks/cronShift");
 const app = express();
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;

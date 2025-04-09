@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 interface DecodedToken {
   username: string;
@@ -19,7 +19,6 @@ interface DecodedToken {
   rfidId?: string;
 }
 
-// Define expected structure of API response
 interface LoginResponse {
   token: string;
 }
@@ -40,12 +39,10 @@ export function LoginForm({
       alert("All fields are required");
       return;
     }
-
     if (!/\S+@\S+\.\S+/.test(email)) {
       alert("Please enter a valid email address");
       return;
     }
-
     try {
       const response = await axios.post<LoginResponse>(
         `${API_URL}/api/login`,
@@ -53,13 +50,8 @@ export function LoginForm({
       );
 
       const { token } = response.data;
-
-      // Decode the token with proper typing
       const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
-
       const { username, role, department, userId, profilePic,fingerprintId ,rfidId} = decoded;
-
-      // use session later
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
@@ -68,7 +60,6 @@ export function LoginForm({
       localStorage.setItem("profilePic", profilePic || ""); 
       localStorage.setItem("fingerprintId", fingerprintId || "");
       localStorage.setItem("rfidId", rfidId || "");
-
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
