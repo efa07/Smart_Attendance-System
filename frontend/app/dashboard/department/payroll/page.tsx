@@ -9,6 +9,7 @@ interface Payroll {
   email: string;
   baseSalary: number;
   finalSalary: number;
+  status:string;
 }
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -20,7 +21,7 @@ export default function PayrollTable() {
     async function fetchPayroll() {
       const token = localStorage.getItem("token")
       try {
-        const res = await fetch(`${API_URL}/api/pay/dep/payroll`,{
+        const res = await fetch(`${API_URL}/api/pay/approved-payrolls`,{
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -39,6 +40,47 @@ export default function PayrollTable() {
     fetchPayroll();
   }, []);
 
+  const handleApprove = async(userId: number,status:string) => {
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API_URL}/api/pay/approve-payroll`,{
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, status }),
+      });
+      if (!res.ok) throw new Error("Failed to approve payroll");
+      const data =  await res.json();
+      alert("Payroll approved successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReject = async(userId: number,status:string) => {
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${API_URL}/api/pay/reject-payroll`,{
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, status }),
+      });
+      if (!res.ok) throw new Error("Failed to reject payroll");
+      const data =  await res.json();
+      alert("Payroll rejected !");
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+ 
   return (
     <div className="max-w-6xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
       <h1 className="text-2xl font-bold text-gray-900 mb-4">Payroll Report</h1>
@@ -55,6 +97,8 @@ export default function PayrollTable() {
               <TableHead>Email</TableHead>
               <TableHead>Base Salary</TableHead>
               <TableHead>Final Salary</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -65,6 +109,11 @@ export default function PayrollTable() {
                 <TableCell>{payroll.email}</TableCell>
                 <TableCell>${payroll.baseSalary}</TableCell>
                 <TableCell className="font-semibold text-green-600">${payroll.finalSalary}</TableCell>
+                <TableCell>{payroll.status}</TableCell>
+                <TableCell className="flex gap-2">
+                  {payroll.status === "pending" &&   <Button variant="outline" onClick={() => handleApprove(payroll.userId,"approved")}>Approve</Button>}
+                  {payroll.status === "pending" && <Button variant="destructive" onClick={() => handleReject(payroll.userId,"rejected")}>Reject</Button>}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

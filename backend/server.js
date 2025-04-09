@@ -12,7 +12,7 @@ const { body, validationResult } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-
+const uploadRoute = require("./routes/uploadRoute");
 const employeeRoutes = require("./routes/employeeRoutes");
 const leaveRoute = require("./routes/leaveRoute");
 const payRoute = require("./routes/payRoute");
@@ -84,6 +84,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/leaves", leaveRoute);
 app.use("/api/shift", shiftRoute);
 app.use("/api/pay", payRoute);
+app.use("/api/upload", uploadRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //enforce HTTPS in production

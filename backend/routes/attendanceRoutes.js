@@ -77,7 +77,7 @@ router.post("/clock-in", authenticate, async (req, res) => {
       if (now.isBefore(morningStart)) {
         status = "early";
       } else if (now.isBetween(morningStart, morningToleranceEnd, null, "[)")) {
-        status = "in_time";
+        status = "on_time";
       } else if (now.isBetween(morningToleranceEnd, morningLateEnd, null, "[)")) {
         status = "late";
       } else {
@@ -87,7 +87,7 @@ router.post("/clock-in", authenticate, async (req, res) => {
       if (now.isBefore(afternoonStart)) {
         status = "early";
       } else if (now.isBetween(afternoonStart, afternoonToleranceEnd, null, "[)")) {
-        status = "in_time";
+        status = "on_time";
       } else if (now.isBetween(afternoonToleranceEnd, afternoonLateEnd, null, "[)")) {
         status = "late";
       } else {
@@ -348,7 +348,6 @@ router.get('/attendance-summary', async (req, res) => {
   }
 });
 
-
 // Fetch pending attendance records 
 router.get("/pending", authenticate, async (req, res) => {
   const { userId } = req.user;
@@ -441,7 +440,6 @@ router.put("/approve/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to approve record" });
   }
 });
-
 
 // Reject attendance record
 router.put("/reject/:id", async (req, res) => {

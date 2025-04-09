@@ -12,18 +12,18 @@ const shiftOptions = ["Morning", "Evening", "Night"];
 const ShiftManagement = () => {
   const [shifts, setShifts] = useState<{ 
     id: number; 
-    user: { fullName: string }; 
+    user: { fullName: string; id: number; email: string; department: string }; 
     shiftType: string; 
     shiftStart: string; 
     shiftEnd: string 
   }[]>([]);
-    const [newShift, setNewShift] = useState({ shiftType: "", shiftStart: "", shiftEnd: "" });
-  const [employee, setEmployee] = useState("");
+  const [newShift, setNewShift] = useState({ shiftType: "", shiftStart: "", shiftEnd: "" });
   const [selectedShift, setSelectedShift] = useState("");
   const [shift, setShift] = useState({ shiftType: "", shiftStart: "", shiftEnd: "", id: 0 });
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -40,10 +40,12 @@ const ShiftManagement = () => {
     const fetchShifts = async () => {
       try {
         const response = await fetch(`${API_URL}/api/shift/shifts`);
+        if (!response.ok) throw new Error("Failed to fetch shifts");
         const data = await response.json();
         setShifts(data);
       } catch (error) {
         console.error("Error fetching shifts:", error);
+        setError("Failed to fetch shifts");
       }
     };
     fetchShifts();
@@ -51,7 +53,10 @@ const ShiftManagement = () => {
 
   // Add a new shift
   const addShift = async () => {
-    if (!newShift.shiftType || !newShift.shiftStart || !newShift.shiftEnd) return;
+    if (!newShift.shiftType || !newShift.shiftStart || !newShift.shiftEnd) {
+      setError("All fields are required");
+      return;
+    }
 
     try {
       const response = await fetch(`${API_URL}/api/shift/shift`, {
@@ -60,61 +65,79 @@ const ShiftManagement = () => {
         body: JSON.stringify({
           userId: userId,
           shiftType: newShift.shiftType,
-          shiftStart: newShift.shiftStart,
-          shiftEnd: newShift.shiftEnd,
+          shiftStart: new Date(newShift.shiftStart).toISOString(),
+          shiftEnd: new Date(newShift.shiftEnd).toISOString(),
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to create shift");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create shift");
+      }
 
       const createdShift = await response.json();
       setShifts([...shifts, createdShift]);
       setNewShift({ shiftType: "", shiftStart: "", shiftEnd: "" });
+      setError(null);
     } catch (error) {
       console.error("Error adding shift:", error);
+      setError(error instanceof Error ? error.message : "Failed to create shift");
     }
   };
 
-  // Fetch the current user's shift
+  // Fetch the current user's shifts
   useEffect(() => {
-    const fetchUserShift = async () => {
+    const fetchUserShifts = async () => {
       if (!userId) return;
       try {
-        const response = await fetch(`${API_URL}/api/shift/${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setShift(data);
+        const response = await fetch(`${API_URL}/api/shift/user/${userId}`);
+        if (!response.ok) throw new Error("Failed to fetch user shifts");
+        const data = await response.json();
+        if (data.length > 0) {
+          setShift(data[0]); // Set the most recent shift
         }
       } catch (error) {
-        console.error("Error fetching user shift:", error);
+        console.error("Error fetching user shifts:", error);
+        setError("Failed to fetch user shifts");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserShift();
+    fetchUserShifts();
   }, [userId]);
 
   // Update shift
   const updateShift = async () => {
-    if (!shift.id || !shift.shiftType || !shift.shiftStart || !shift.shiftEnd) return;
+    if (!shift.id || !shift.shiftType || !shift.shiftStart || !shift.shiftEnd) {
+      setError("All fields are required");
+      return;
+    }
 
     try {
-      const response = await fetch(`${API_URL}/api/shift/${userId}`, {
+      const response = await fetch(`${API_URL}/api/shift/shift/${shift.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          shiftId: shift.id,
+          userId: userId,
           shiftType: shift.shiftType,
-          shiftStart: shift.shiftStart,
-          shiftEnd: shift.shiftEnd,
+          shiftStart: new Date(shift.shiftStart).toISOString(),
+          shiftEnd: new Date(shift.shiftEnd).toISOString(),
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to update shift");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update shift");
+      }
+
+      const updatedShift = await response.json();
+      setShifts(shifts.map(s => s.id === updatedShift.id ? updatedShift : s));
+      setError(null);
       alert("Shift updated successfully!");
     } catch (error) {
       console.error("Error updating shift:", error);
+      setError(error instanceof Error ? error.message : "Failed to update shift");
     }
   };
   
@@ -150,6 +173,11 @@ const ShiftManagement = () => {
 
   return (
     <div className="p-4 space-y-6">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
       <div className={role === "employee" ? "" : "hidden"}>
     <div className="p-4 space-y-6">
       <h2 className="text-xl font-bold">My Shift</h2>
@@ -169,8 +197,16 @@ const ShiftManagement = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Input type="datetime-local" value={shift.shiftStart} onChange={(e) => setShift({ ...shift, shiftStart: e.target.value })} />
-            <Input type="datetime-local" value={shift.shiftEnd} onChange={(e) => setShift({ ...shift, shiftEnd: e.target.value })} />
+            <Input 
+              type="datetime-local" 
+              value={shift.shiftStart ? new Date(shift.shiftStart).toISOString().slice(0, 16) : ""} 
+              onChange={(e) => setShift({ ...shift, shiftStart: e.target.value })} 
+            />
+            <Input 
+              type="datetime-local" 
+              value={shift.shiftEnd ? new Date(shift.shiftEnd).toISOString().slice(0, 16) : ""} 
+              onChange={(e) => setShift({ ...shift, shiftEnd: e.target.value })} 
+            />
             <Button onClick={updateShift}>Update Shift</Button>
           </CardContent>
         </Card>
@@ -190,8 +226,16 @@ const ShiftManagement = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Input type="datetime-local" value={newShift.shiftStart} onChange={(e) => setNewShift({ ...newShift, shiftStart: e.target.value })} />
-            <Input type="datetime-local" value={newShift.shiftEnd} onChange={(e) => setNewShift({ ...newShift, shiftEnd: e.target.value })} />
+            <Input 
+              type="datetime-local" 
+              value={newShift.shiftStart} 
+              onChange={(e) => setNewShift({ ...newShift, shiftStart: e.target.value })} 
+            />
+            <Input 
+              type="datetime-local" 
+              value={newShift.shiftEnd} 
+              onChange={(e) => setNewShift({ ...newShift, shiftEnd: e.target.value })} 
+            />
             <Button onClick={addShift}>Add Shift</Button>
           </CardContent>
         </Card>
@@ -205,6 +249,7 @@ const ShiftManagement = () => {
             <TableHeader>
               <TableRow>
                 <TableCell><b>User Name</b></TableCell>
+                <TableCell><b>Department</b></TableCell>
                 <TableCell><b>Shift</b></TableCell>
                 <TableCell><b>Start Time</b></TableCell>
                 <TableCell><b>End Time</b></TableCell>
@@ -213,6 +258,7 @@ const ShiftManagement = () => {
             {shifts.map((shift) => (
               <TableRow key={shift.id}>
                 <TableCell>{shift.user.fullName}</TableCell>
+                <TableCell>{shift.user.department}</TableCell>
                 <TableCell>{shift.shiftType}</TableCell>
                 <TableCell>{new Date(shift.shiftStart).toLocaleString()}</TableCell>
                 <TableCell>{new Date(shift.shiftEnd).toLocaleString()}</TableCell>
@@ -228,19 +274,9 @@ const ShiftManagement = () => {
             <h3 className="font-semibold">Assign Shift</h3>
             <Input
               placeholder="Employee Name"
-              value={employee}
-              onChange={(e) => setEmployee(e.target.value)}
+              value={selectedShift}
+              onChange={(e) => setSelectedShift(e.target.value)}
             />
-            <Select value={selectedShift} onValueChange={setSelectedShift}>
-              <SelectTrigger>Select a Shift</SelectTrigger>
-              <SelectContent>
-                {shifts.map((shift) => (
-                  <SelectItem key={shift.id} value={shift.shiftType}>
-                    {shift.shiftType} ({new Date(shift.shiftStart).toLocaleString()} - {new Date(shift.shiftEnd).toLocaleString()})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <Button onClick={assignShift}>Assign Shift</Button>
           </CardContent>
         </Card>

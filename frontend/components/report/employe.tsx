@@ -112,18 +112,22 @@ export default function AttendanceReports() {
       {/* Summary Card */}
       <div className="w-full max-w-2xl bg-white shadow rounded p-6 mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Summary</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-gray-100 rounded p-4 text-center">
-            <p className="text-gray-700">Present</p>
-            <p className="text-xl font-bold text-gray-900">{summary.present || 0}</p>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="bg-green-100 rounded p-4 text-center">
+            <p className="text-gray-700">Early</p>
+            <p className="text-xl font-bold text-green-900">{summary.early || 0}</p>
           </div>
-          <div className="bg-gray-100 rounded p-4 text-center">
+          <div className="bg-blue-100 rounded p-4 text-center">
+            <p className="text-gray-700">On Time</p>
+            <p className="text-xl font-bold text-blue-900">{summary.on_time || 0}</p>
+          </div>
+          <div className="bg-yellow-100 rounded p-4 text-center">
             <p className="text-gray-700">Late</p>
-            <p className="text-xl font-bold text-gray-900">{summary.late || 0}</p>
+            <p className="text-xl font-bold text-yellow-900">{summary.late || 0}</p>
           </div>
-          <div className="bg-gray-100 rounded p-4 text-center">
-            <p className="text-gray-700">Absent</p>
-            <p className="text-xl font-bold text-gray-900">{summary.absent || 0}</p>
+          <div className="bg-red-100 rounded p-4 text-center">
+            <p className="text-gray-700">Very Late</p>
+            <p className="text-xl font-bold text-red-900">{summary.very_late || 0}</p>
           </div>
         </div>
       </div>

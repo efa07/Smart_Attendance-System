@@ -24,6 +24,7 @@ model User {
   notifications  Notification[]
   fingerprintId  String?       
   rfidId         String?  
+  payroll        Payroll[]
 }
 
 model Attendance {
@@ -78,4 +79,16 @@ model Notification {
   message   String
   status    String
   createdAt DateTime @default(now())
+}
+
+model Payroll {
+  id         String   @id @default(uuid()) 
+  userId     Int      @unique 
+  fullName   String
+  email      String
+  baseSalary Float
+  finalSalary Float
+  status     String 
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
